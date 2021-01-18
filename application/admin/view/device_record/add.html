@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+  {include file="public/label_css" /}
+  <style>
+    .layui-table-view{
+      margin-left: 19px !important;
+    }
+  </style>
+</head>
+
+<body style="background-color:#f2f2f2;">
+  <div class="x-body">
+    <form class="layui-form mainform" method="post" action="{:url('DeviceRecord/doAdd')}">
+      {include file="form/device_record" /}
+    </form>
+  </div>
+</body>
+
+</html>

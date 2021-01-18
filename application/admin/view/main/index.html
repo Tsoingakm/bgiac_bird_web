@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    {include file="public/header" /}
+  </head>
+
+  <body>
+    <!-- 顶部开始 -->
+    <div class="container">
+      <div class="logo">
+        <a href="javascript:void(0)">{$web.title}</a>
+      </div>
+      <div class="left_open">
+        <i title="展开左侧栏" class="iconfont">&#xe699;</i>
+      </div>
+      <ul class="layui-nav right " lay-filter="">
+        <li class="layui-nav-item">
+          <a href="javascript:;">欢迎您！{$admin.real_name}</a>
+          <dl class="layui-nav-child">
+            <!-- 二级菜单 -->
+            <dd>
+              <a onclick="x_admin_show('修改密码','{:url('Admin/resetPwd',['aid'=>$admin['aid']])}',600,350)">修改密码</a>
+            </dd>
+
+            <dd>
+              <a href="{:url('Main/loginOut')}">退出</a>
+            </dd>
+
+          </dl>
+        </li>
+        <!--<li class="layui-nav-item to-index "><a href="/">前台首页</a></li>-->
+      </ul>
+
+    </div>
+    <!-- 顶部结束 -->
+    <!-- 中部开始 -->
+    <!-- 左侧菜单开始 -->
+    <div class="left-nav">
+      <div id="side-nav">
+        <ul id="nav">
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">&#xe726;</i>
+              <cite>账号管理</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('Admin/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>账号列表</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('Role/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>角色管理</cite>
+                </a>
+              </li>
+
+              <li class="dis_none">
+                <a _href="{:url('Power/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>权限管理</cite>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">&#xe69e;</i>
+              <cite>台账管理</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('BirdSupervise/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>一级鸟情记录</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('BirdNet/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>捕鸟网记录</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('BirdExpulsion/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>危险鸟类驱赶记录</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('WorkInsect/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>昆虫消杀工作记录</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('WorkLawn/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>草坪维护工作记录</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('WorkVector/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>病媒防控工作记录</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('DeviceMaintenance/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>设备维护记录</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="javascript:;">
+                  <i class="iconfont">&#xe6f4;</i>
+                  <cite>设备管理（旧）</cite>
+                  <i class="iconfont nav_right"></i>
+                </a>
+                <ul class="sub-menu">
+                  <li>
+                    <a _href="{:url('DeviceRecord/index')}">
+                      <i class="iconfont">&#xe6a7;</i>
+                      <cite>设备维护工作记录</cite>
+                    </a>
+                  </li>
+                  <li>
+                    <a _href="{:url('DeviceOverhaul/index')}">
+                      <i class="iconfont">&#xe6a7;</i>
+                      <cite>设备检修查询</cite>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+            </ul>
+          </li>
+          <li style="display: none;">
+            <a href="javascript:;">
+              <i class="iconfont">&#xe6b5;</i>
+              <cite>数据查询</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('QueryBirdSupervise/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>一级鸟情记录查询</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('QueryBirdSeize/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>捕鸟网记录查询</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('QueryBirdDrive/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>鸟类危险活动查询</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('QueryWorkInsect/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>消杀记录查询</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('QueryWorkVector/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>病媒防控查询</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('QueryWorkLawn/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>草坪维护查询</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('QueryDevice/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>设备维护查询</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('DeviceOverhaul/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>设备检修查询</cite>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">&#xe6ce;</i>
+              <cite>数据统计</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('StatsBirdSupervise/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>一级鸟情统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StatsBirdNet/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>捕鸟网统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StatsBirdExpulsion/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>危险鸟类活动统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StaticWorkInsectRecord/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>昆虫消杀统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StatsWorkInsect/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>消杀次数、面积统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StatsWorkLawn/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>草坪维护面积统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StatsWorkVector/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>病媒防控次数统计</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('StatsDeviceMaintain/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>设备维护台次统计</cite>
+                </a>
+              </li>
+
+
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">&#xe828;</i>
+              <cite>区域统计</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('StaticWorkInsectMap/amap')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>昆虫消杀区域统计</cite>
+                </a>
+              </li>
+
+              <li>
+                <a _href="{:url('StaticWorkLawnMap/amap')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>草坪维护区域统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StaticWorkVectorMap/amap')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>病媒防控区域统计</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('StaticBirdExpulsionMap/amap')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>危险鸟类活动记录</cite>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">&#xe70a;</i>
+              <cite>台账配置</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('BirdName/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>鸟类信息配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('SysBirdConditon/index', array('can_del'=>0))}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>一级鸟情配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('SysBirdSeize/index', array('can_del'=>0))}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>捕鸟网配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('SysBirdDrive/index', array('can_del'=>0))}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>危险鸟类驱赶配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('SysPerishInsect/index', array('can_del'=>0))}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>昆虫消杀配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('SysWorkLawn/index', array('can_del'=>0))}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>草坪维护配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('SysWorkVector/index', array('can_del'=>0))}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>病媒防治配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('Unit/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>维护单位配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('BreakDown/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>设备维护工卡配置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="javascript:;">
+                  <i class="iconfont">&#xe6f4;</i>
+                  <cite>设备相关配置</cite>
+                  <i class="iconfont nav_right"></i>
+                </a>
+                <ul class="sub-menu">
+                  <li>
+                    <a _href="{:url('Device/index')}">
+                      <i class="iconfont">&#xe6a7;</i>
+                      <cite>设备管理</cite>
+                    </a>
+                  </li>
+                  <li>
+                    <a _href="{:url('DeviceStatus/index')}">
+                      <i class="iconfont">&#xe6a7;</i>
+                      <cite>设备状态管理</cite>
+                    </a>
+                  </li>
+                  <li>
+                    <a _href="{:url('DeviceParts/index')}">
+                      <i class="iconfont">&#xe6a7;</i>
+                      <cite>设备操作管理</cite>
+                    </a>
+                  </li>
+                  <li>
+                    <a _href="{:url('DevicePartsStatus/index')}">
+                      <i class="iconfont">&#xe6a7;</i>
+                      <cite>设备操作状态管理</cite>
+                    </a>
+                  </li>
+                  <li>
+                    <a _href="{:url('DeviceProvider/index', array('can_del'=>0))}">
+                      <i class="iconfont">&#xe6a7;</i>
+                      <cite>服务商配置</cite>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">&#xe715;</i>
+              <cite>区域管理</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('KmlFileBird/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>鸟情KML管理</cite>
+                </a>
+              </li>
+              <!--<li>
+                <a _href="{:url('MapBird/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>鸟情区域地图</cite>
+                </a>
+              </li>-->
+              <li>
+                <a _href="{:url('KmlFileWork/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>作业区域KML管理</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('WorkArea/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>维护工作区域</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('BirdArea/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>维护鸟情区域</cite>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">&#xe70c;</i>
+              <cite>日志管理</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('LogPage/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>日志列表</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('Config/edit',['code'=>'log'])}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>日志设置</cite>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">
+                &#xe6ae;</i>
+              <cite>系统管理</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('Config/edit',['code'=>'web'])}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>系统设置</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('DataBackup/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>数据库备份</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('Config/edit',['code'=>'app'])}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>app管理</cite>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="javascript:;">
+              <i class="iconfont">
+                &#xe6ae;</i>
+              <cite>办公计划</cite>
+              <i class="iconfont nav_right">&#xe697;</i>
+            </a>
+            <ul class="sub-menu">
+              <li>
+                <a _href="{:url('Schedule/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>工作计划表</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('WordRecord/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>文字性综合记录</cite>
+                </a>
+              </li>
+              <li>
+                <a _href="{:url('Article/index')}">
+                  <i class="iconfont">&#xe6a7;</i>
+                  <cite>文件通知</cite>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+    <!-- <div class="x-slide_left"></div> -->
+    <!-- 左侧菜单结束 -->
+    <!-- 右侧主体开始 -->
+    <div class="page-content">
+      <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+          <li class="home">
+            <i class="layui-icon">&#xe68e;</i>我的桌面</li>
+        </ul>
+        <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+            <iframe src="{:url('Main/wellcome')}" frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-content-bg"></div>
+    <!-- 右侧主体结束 -->
+    <!-- 中部结束 -->
+    <!-- 底部开始 -->
+    <div class="footer">
+      <div class="copyright tr pr20">{$web.copyright}</div>
+    </div>
+    <!-- 底部结束 -->
+
+  </body>
+
+</html>

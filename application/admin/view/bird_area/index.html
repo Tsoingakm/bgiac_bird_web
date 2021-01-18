@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('BirdArea/index')}">
+        <!--<input class="layui-input" placeholder="开始时间" name="starting_time" id="starting_time" value="{$starting_time}">
+        <input class="layui-input" placeholder="截止时间" name="end_time" id="end_time" value="{$end_time}">
+        <input type="text" name="keyword" placeholder="请输入鸟名" autocomplete="off" class="layui-input" value="{$keyword}">-->
+
+        日期范围：
+        <div class="layui-input-inline">
+          <input class="layui-input" style="width:180px;" placeholder="请选择时间范围" name="day" id="dayRange" value="{$day}" autocomplete="off">
+        </div>
+
+        &nbsp;
+        是否审核：
+        <div class="layui-input-inline">
+          <select name="valid" class="w80" lay-search>
+            <option value="">全部</option>
+            <option value="1" {eq name="$valid" value="1" } selected="selected" {/eq}>审核通过</option>
+            <option value="0" {eq name="$valid" value="0" } selected="selected" {/eq}>待审核</option>
+            <option value="-1" {eq name="$valid" value="-1" } selected="selected" {/eq}>审核未通过</option>
+          </select>
+        </div>
+        &nbsp;
+        录入人员：
+        <div class="layui-input-inline">
+          <select name="aid" class="w80" lay-search>
+            <option value="">全部</option>
+            {foreach name="worker_list" item="item"}
+            <option value="{$item.key}" {eq name="$aid" value="$item['key']" } selected="selected" {/eq}>{$item.value}</option>
+            {/foreach}
+          </select>
+        </div>
+
+        <button class="layui-btn" type="submit" style="margin-bottom: 15px;"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <button class="layui-btn layui-btn-danger" onclick="delAll()">
+        <i class="layui-icon"></i>批量删除
+      </button>
+      <button class="layui-btn" onclick="x_admin_show('添加工作区域','{:url('BirdArea/add')}')">
+        <i class="layui-icon"></i>添加
+      </button>
+      <span class="x-right" style="line-height:40px">共有数据：{$totalRows} 条</span>
+    </xblock>
+
+    <table class="layui-hide" id="dataTable" lay-filter="list_table_event"></table>
+
+    <script type="text/html" id="table-operation-list">
+      <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
+        <i class="layui-icon layui-icon-edit"></i>审核与编辑
+      </a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+        <i class="layui-icon layui-icon-delete"></i>删除
+      </a>
+    </script>
+
+    <script type="text/html" id="table-valid-list">
+      {{#  if(d.valid == 0){ }}
+      <span class="layui-badge layui-bg-gray">待审核</span>
+      {{#  } }}
+      {{#  if(d.valid == 1){ }}
+      <span class="layui-badge layui-bg-blue">审核通过</span>
+      {{#  } }}
+      {{#  if(d.valid < 0){ }}
+      <span class="layui-badge">审核未通过</span>
+      {{#  } }}
+    </script>
+  </div>
+</body>
+
+<script>
+  var startDate1 = new Date(new Date().setDate(1));
+  //定义接收上个月的第一天和最后一天
+  var startDate2 = new Date(new Date(new Date().setMonth(new Date().getMonth() - 1)).setDate(1));
+  var endDate2 = new Date(new Date().setDate(0));
+
+  //本年1月1号
+  var startYearDate = new Date(new Date(new Date().setDate(1)).setMonth(0));
+  //去年1月1号
+  var startYearDate2 = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(1)).setMonth(0));
+  //去年年底
+  var endYearDate = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(0)).setMonth(11));
+
+  var now = new Date(); //当前日期
+  var nowDayOfWeek = now.getDay(); //今天本周的第几天
+
+  var loding;
+  var allRowData = [];
+
+  layui.use('table', function(){
+    var table = layui.table;
+
+    table.render({
+      elem: '#dataTable'
+      ,url:'{$dataUrl}'
+      ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+      ,cols: [[
+        {type:'checkbox'}
+        ,{field:'id', width:80, title: '编号'}
+        ,{field:'date', title: '添加时间'}
+        ,{field:'area_name', title: '区域名称'}
+        ,{field:'staff', title: '录入人员'}
+        ,{field:'valid', title: '是否审核', toolbar: '#table-valid-list'}
+        ,{
+          title: '操作',
+          width: 180,
+          toolbar: '#table-operation-list',
+          fixed: 'right'
+        }
+      ]]
+      ,page: true
+    });
+
+    //监听行工具事件
+    table.on('tool(list_table_event)', function (obj) {
+      var data = obj.data;
+      switch (obj.event) {
+        case "edit":
+          var url = '{:url("BirdArea/edit")}';
+          url += '?id=' + data.id;
+          open_with_full_screen('审核与编辑工作区域',url);
+          break;
+        case "del":
+          member_del(obj.data,obj.data.id);
+          break;
+        default:
+      }
+    });
+  });
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#dayRange' //指定元素
+            , max: '{$today}'
+            , range: '~'
+          , extrabtns: [
+            {
+              id: 'week',
+              text: '本周',
+              range: [new Date(new Date().setDate(new Date().getDate() - nowDayOfWeek + 1)), new Date()]
+            },
+            {
+              id: 'lastday-7',
+              text: '过去7天',
+              range: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date(new Date().setDate(new Date().getDate() - 1))]
+            },
+            {id: 'thismonth', text: '本月', range: [startDate1, now]},
+            {id: 'lastmonth', text: '上个月', range: [startDate2, endDate2]},
+            {id: 'thisyear', text: '本年', range: [startYearDate, now]},
+            {id: 'lastyear', text: '上一年', range: [startYearDate2, endYearDate]}
+          ],
+        });
+    });
+
+  /*用户-删除*/
+  function member_del(obj, id) {
+    layer.confirm('确认要删除吗？', function(index) {
+      $.post('{:url("BirdArea/doDel")}', { 'ids': id }, function(data) {
+        if(data.code == 1){
+          layer.msg(data.msg, { icon: 1, time: 1000 });
+          setTimeout( function(){ window.location.reload(); }, 1000);
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+
+  function delAll(argument) {
+    var data = tableCheck.getData();
+    layer.confirm('确认要删除吗？' + data, function(index) {
+      $.post('{:url("BirdArea/doDel")}', { 'ids': data.join(",") }, function(data) {
+        if(data.code == 1){
+          layer.msg('删除成功', { icon: 1 });
+          setTimeout( function(){ window.location.reload(); }, 1000);
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+</script>
+
+
+<style>
+  .layui-table-cell {
+    overflow: visible;
+  }
+
+  .layui-table-box {
+    overflow: visible;
+  }
+
+  .layui-table-body {
+    overflow: visible;
+  }
+  /* 设置下拉框的高度与表格单元相同 */
+  td .layui-form-select{
+    margin-top: -10px;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
+  .layui-input-inline{
+    margin-bottom: 15px;
+  }
+</style>
+
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="public/header" /}
+</head>
+<body>
+{include file="public/nav" /}
+
+
+<div class=" ">
+    <div class="map_main pos_r">
+
+        <div class="pos_r map_container" id="container"></div>
+        <div class="selectbox">
+
+            <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('StaticWorkLawnMap/amap')}">
+                日期范围：<input class="layui-input" style="width:180px;" placeholder="请选择时间范围" name="day" id="dayRange" value="{$day}" autocomplete="off">
+                &nbsp;&nbsp;
+                维护类型：
+                <div class="layui-input-inline">
+                    <select name="work_lawn_type" class="w80" lay-search>
+                        <option value="">全部</option>
+                        {foreach name="work_lawn_type_list" item="item"}
+                        <option value="{$item.value}" {eq name="item.value" value="$work_lawn_type" }selected{/eq}>{$item.key}</option>
+                        {/foreach}
+
+                    </select>
+                </div>
+
+                <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+                <a class="layui-btn" title="点击下载草坪维护区域统计KML" href="{:url('StaticWorkLawnMap/kml',['begin_day'=>$begin_day,'end_day'=>$end_day,'work_lawn_type'=>$work_lawn_type])}" target="_blank" download="草坪维护区域统计.kml"><i class="layui-icon">&#xe601;</i></a>
+            </form>
+
+        </div>
+
+        <div class="set_box set_box_map">
+            <div class="d2" style="display: none" onclick="changeMap(2)">
+                <img src="__STATIC__/images/d2map.png"/>
+                <span>地图</span>
+            </div>
+            <div class="d3" onclick="changeMap(3)">
+                <img src="__STATIC__/images/d3map.png"/>
+                <span>卫星</span>
+            </div>
+        </div>
+        <div class="set_box set_box_name">
+            <div class="item  set_box_name_item on">
+                <i class="layui-icon">&#xe605;</i> 大字体
+            </div>
+        </div>
+        <div class="set_box set_box_name1">
+            <div class="item  set_box_name_item1">
+                <i class="layui-icon">&#xe605;</i> 小字体
+            </div>
+        </div>
+        <div class="set_box set_box_name2">
+            <div class="item  set_box_name_item2">
+                <i class="layui-icon">&#xe605;</i> 无名字
+            </div>
+        </div>
+        <div class="set_box set_box_name_color1">
+            <div class="item  set_box_name_color_item1 on">
+                <i class="layui-icon">&#xe605;</i> 黑字体
+            </div>
+        </div>
+        <div class="set_box set_box_name_color2">
+            <div class="item  set_box_name_color_item2">
+                <i class="layui-icon">&#xe605;</i> 蓝字体
+            </div>
+        </div>
+
+        <div class="color_box">
+            <img class="colorImg" src="__STATIC__/images/color.png">
+        </div>
+
+    </div>
+    <script>
+        var map = null;//地图对象
+        var jsonStr = '{$areaList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var areaList = eval("(" + jsonStr + ")");
+        jsonStr = '{$insectList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var workList = eval("(" + jsonStr + ")");
+    </script>
+
+    {include file="public/inc_amap"/}
+    <script type="text/javascript">
+        var startDate1 = new Date(new Date().setDate(1));
+        //定义接收上个月的第一天和最后一天
+        var startDate2 = new Date(new Date(new Date().setMonth(new Date().getMonth() - 1)).setDate(1));
+        var endDate2 = new Date(new Date().setDate(0));
+
+        //本年1月1号
+        var startYearDate = new Date(new Date(new Date().setDate(1)).setMonth(0));
+        //去年1月1号
+        var startYearDate2 = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(1)).setMonth(0));
+        //去年年底
+        var endYearDate = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(0)).setMonth(11));
+
+        var now = new Date(); //当前日期
+        var nowDayOfWeek = now.getDay(); //今天本周的第几天
+        $(function () {
+            initWindow();
+            $(window).resize(function () {
+                initWindow();
+            });
+            mapInit();
+            $(".set_box_name_item").click(function () {
+                $(".set_box_name_item1").removeClass("on");
+                $(".set_box_name_item2").removeClass("on");
+                if ($(this).hasClass("on")) {
+                    $(this).removeClass("on");
+                    $(".set_box_name_item2").addClass("on");
+                    showHidePointText(0);
+                } else {
+                    $(this).addClass("on");
+                    $(".amap-overlay-text-container").css("font-size", '14px');
+                    showHidePointText(1);
+                }
+            });
+            $(".set_box_name_item1").click(function () {
+                $(".set_box_name_item").removeClass("on");
+                $(".set_box_name_item2").removeClass("on");
+                if ($(this).hasClass("on")) {
+                    $(this).removeClass("on");
+                    $(".set_box_name_item2").addClass("on");
+                    showHidePointText(0);
+                } else {
+                    $(this).addClass("on");
+                    $(".amap-overlay-text-container").css("font-size", '10px');
+                    showHidePointText(1);
+                }
+            });
+            $(".set_box_name_item2").click(function () {
+                $(".set_box_name_item").removeClass("on");
+                $(".set_box_name_item1").removeClass("on");
+                if (!$(this).hasClass("on")) {
+                    $(this).addClass("on");
+                    showHidePointText(0);
+                }
+            });
+            $(".set_box_name_color_item1").click(function () {
+                $(".set_box_name_color_item2").removeClass("on");
+                if (!$(this).hasClass("on")) {
+                    $(this).addClass("on");
+                    $(".amap-overlay-text-container").css("color", '#000000');
+                }
+            });
+            $(".set_box_name_color_item2").click(function () {
+                $(".set_box_name_color_item1").removeClass("on");
+                if (!$(this).hasClass("on")) {
+                    $(this).addClass("on");
+                    $(".amap-overlay-text-container").css("color", 'blue');
+                }
+            });
+        });
+        //初始化地图窗口
+        function initWindow() {
+            $(".map_main").height($(window).height() - 40);
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#dayRange' //指定元素
+                    , max: '{$today}'
+                    , range: '~'
+                    , extrabtns: [
+                        {
+                            id: 'week',
+                            text: '本周',
+                            range: [new Date(new Date().setDate(new Date().getDate() - nowDayOfWeek + 1)), new Date()]
+                        },
+                        {
+                            id: 'lastday-7',
+                            text: '过去7天',
+                            range: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date(new Date().setDate(new Date().getDate() - 1))]
+                        },
+                        {id: 'thismonth', text: '本月', range: [startDate1, now]},
+                        {id: 'lastmonth', text: '上个月', range: [startDate2, endDate2]},
+                        {id: 'thisyear', text: '本年', range: [startYearDate, now]},
+                        {id: 'lastyear', text: '上一年', range: [startYearDate2, endYearDate]}
+                    ],
+                });
+
+                //执行一个laydate实例
+                // laydate.render({
+                //     elem: '#end_day' //指定元素
+                //     , max: '{$today}'
+                // });
+            });
+        }
+
+        function showRecord(area_name) {
+            var url = "{:url('StaticWorkLawnMap/record',['area_name'=>'11area_name11','begin_day'=>$begin_day,'end_day'=>$end_day,'work_insect_spary'=>$work_insect_spary])}";
+            url = url.replace(/11area_name11/, area_name);
+            console.log(url);
+            x_admin_show(area_name + ' 作业记录', url);
+        }
+
+    </script>
+
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<div class="layui-form-item">
+  <label class="layui-form-label">
+        <span class="x-red">*</span>{$data.item_name}
+    </label>
+  <div class="layui-input-inline">
+    <select name="{$data.item_field}" id="{$data.item_field}" datatype="*" lay-search>
+        {foreach name="data.item_options" item="item"}
+            <option value="{$item.value}" {eq name="data.item_value" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择{$data.item_name}</span>
+  </div>
+</div>

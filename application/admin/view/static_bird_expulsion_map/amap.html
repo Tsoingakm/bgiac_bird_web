@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="public/header" /}
+</head>
+<body>
+{include file="public/nav" /}
+
+
+<div class=" ">
+    <div class="map_main pos_r">
+
+        <div class="pos_r map_container" id="container"></div>
+        <div class="selectbox">
+
+            <form class="layui-form layui-col-md12 x-so" style="margin-bottom: 15px" method="post" action="{:url('StaticBirdExpulsionMap/amap')}">
+                日期范围：<input class="layui-input" style="width:180px;" placeholder="请选择时间范围" name="day" id="dayRange" value="{$day}" autocomplete="off">
+
+                <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+                <!--<a class="layui-btn" title="点击下载昆虫消杀区域统计KML" href="{:url('StaticWorkInsectMap/kml',['begin_day'=>$begin_day,'end_day'=>$end_day,'work_insect_spary'=>$work_insect_spary])}" target="_blank" download="昆虫消杀区域统计.kml"><i class="layui-icon">&#xe601;</i></a>-->
+            </form>
+            <div style="font-size: 16px;font-weight: 700">图示区间：{$begin_day_str} 至 {$end_day_str}（共{$recordCount}条记录，{$totalBirdNum}只次）</div>
+        </div>
+
+        <div class="set_box set_box_map">
+            <div class="d2" style="display: none" onclick="changeMap(2)">
+                <img src="__STATIC__/images/d2map.png"/>
+                <span>地图</span>
+            </div>
+            <div class="d3" onclick="changeMap(3)">
+                <img src="__STATIC__/images/d3map.png"/>
+                <span>卫星</span>
+            </div>
+
+        </div>
+
+        <div class="color_box">
+            <img class="colorImg" src="__STATIC__/images/color.png">
+        </div>
+
+    </div>
+    <script>
+        var jsonStr = '{$areaList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var areaList = eval("(" + jsonStr + ")");
+        jsonStr = '{$insectList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var workList = eval("(" + jsonStr + ")");
+    </script>
+
+    {include file="public/inc_amap"/}
+    <script type="text/javascript">
+        var map;
+        var colorList = ['red', 'blue', 'crimson ', 'green', 'chocolate ', 'violet', 'sienna', 'purple', 'DeepPink', 'brown'];
+        var lineList = {$lineList};
+
+        var startDate1 = new Date(new Date().setDate(1));
+        //定义接收上个月的第一天和最后一天
+        var startDate2 = new Date(new Date(new Date().setMonth(new Date().getMonth() - 1)).setDate(1));
+        var endDate2 = new Date(new Date().setDate(0));
+
+        //本年1月1号
+        var startYearDate = new Date(new Date(new Date().setDate(1)).setMonth(0));
+        //去年1月1号
+        var startYearDate2 = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(1)).setMonth(0));
+        //去年年底
+        var endYearDate = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(0)).setMonth(11));
+
+        var now = new Date(); //当前日期
+        var nowDayOfWeek = now.getDay(); //今天本周的第几天
+
+        $(function () {
+            initWindow();
+            $(window).resize(function () {
+                initWindow();
+            });
+            map = normalMapInit();
+            var now = parseInt(Date.parse(new Date()) / 1000);
+            if(lineList.length > 0){
+                for(let i=0; i<lineList.length; i++){
+                    //画一条路线
+                    var stamp = lineList[i]['stamp'];
+                    var diff = now - stamp;
+                    // console.log('1',now);
+                    // console.log('2',diff);
+                    var color = '';
+                    var gap = 3600 * 48;
+                    if(diff <= gap){
+                        color = "#5e0000";
+                    }else if(diff > gap && diff <= gap * 2){
+                        color = "#8e1f01";
+                    }else if(diff > gap * 2 && diff <= gap * 4){
+                        color = "#d12324";
+                    }else if(diff > gap * 4 && diff <= gap * 6){
+                        color = "#e70500";
+                    }else if(diff > gap * 6 && diff <= gap * 8){
+                        color = "#ff5821";
+                    }else if(diff > gap * 8 && diff <= gap * 10){
+                        color = "#ff9801";
+                    }else if(diff > gap * 10 && diff <= gap * 12){
+                        color = "#f5b65a";
+                    }else if(diff > gap * 12 && diff <= gap * 14){
+                        color = "#ffd507";
+                    }else if(diff > gap * 14 && diff <= gap * 16){
+                        color = "#f3dc15";
+                    }else if(diff > gap * 16 && diff <= gap * 18){
+                        color = "#ffeb3c";
+                    }else if(diff > gap * 18 && diff <= gap * 20){
+                        color = "#fef391";
+                    }else if(diff > gap * 20 && diff <= gap * 22){
+                        color = "#f0d6c7";
+                    }else if(diff > gap * 22 && diff <= gap * 24){
+                        color = "#f2e1c3";
+                    }else if(diff > gap * 24){
+                        color = "#f2f2f2";
+                    }
+                    // var colorIndex = Math.floor(Math.random()*10);
+                    var pointList = lineList[i]['line'];
+                    addLine(pointList, color);
+                    addArrow(pointList, 10, 48, color);
+                }
+            }
+        });
+        //初始化地图窗口
+        function initWindow() {
+            $(".map_main").height($(window).height() - 40);
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#dayRange' //指定元素
+                    , max: '{$today}'
+                    , range: '~'
+                    , extrabtns: [
+                        {
+                            id: 'week',
+                            text: '本周',
+                            range: [new Date(new Date().setDate(new Date().getDate() - nowDayOfWeek + 1)), new Date()]
+                        },
+                        {
+                            id: 'lastday-7',
+                            text: '过去7天',
+                            range: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date(new Date().setDate(new Date().getDate() - 1))]
+                        },
+                        {id: 'thismonth', text: '本月', range: [startDate1, now]},
+                        {id: 'lastmonth', text: '上个月', range: [startDate2, endDate2]},
+                        {id: 'thisyear', text: '本年', range: [startYearDate, now]},
+                        {id: 'lastyear', text: '上一年', range: [startYearDate2, endYearDate]}
+                    ],
+                });
+            });
+        }
+
+        function addArrow(polyline,length,angleValue, color) {
+            //绘制箭头的函数
+            if(polyline.length > 1){
+                var zoom = map.getZoom();
+                var pixelStart = map.lnglatToPixel(polyline[polyline.length - 2], zoom);
+                var pixelEnd = map.lnglatToPixel(polyline[polyline.length - 1], zoom);
+                var angle = angleValue;//箭头和主线的夹角
+                var r = length; // r/Math.sin(angle)代表箭头长度
+                var delta = 0; //主线斜率，垂直时无斜率
+                var param = 0; //代码简洁考虑
+                var pixelTemX, pixelTemY;//临时点坐标
+                var pixelX, pixelY, pixelX1, pixelY1;//箭头两个点
+                if (pixelEnd.x - pixelStart.x == 0) { //斜率不存在是时
+                    pixelTemX = pixelEnd.x;
+                    if (pixelEnd.y > pixelStart.y) {
+                        pixelTemY = pixelEnd.y - r;
+                    } else {
+                        pixelTemY = pixelEnd.y + r;
+                    }
+                    //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法
+                    pixelX = pixelTemX - r * Math.tan(angle);
+                    pixelX1 = pixelTemX + r * Math.tan(angle);
+                    pixelY = pixelY1 = pixelTemY;
+                } else  //斜率存在时
+                {
+                    delta = (pixelEnd.y - pixelStart.y) / (pixelEnd.x - pixelStart.x);
+                    param = Math.sqrt(delta * delta + 1);
+
+                    if ((pixelEnd.x - pixelStart.x) < 0) //第二、三象限
+                    {
+                        pixelTemX = pixelEnd.x + r / param;
+                        pixelTemY = pixelEnd.y + delta * r / param;
+                    } else//第一、四象限
+                    {
+                        pixelTemX = pixelEnd.x - r / param;
+                        pixelTemY = pixelEnd.y - delta * r / param;
+                    }
+                    //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法
+                    pixelX = pixelTemX + Math.tan(angle) * r * delta / param;
+                    pixelY = pixelTemY - Math.tan(angle) * r / param;
+
+                    pixelX1 = pixelTemX - Math.tan(angle) * r * delta / param;
+                    pixelY1 = pixelTemY + Math.tan(angle) * r / param;
+                }
+
+                var pointArrow = map.pixelToLngLat(new AMap.Pixel(pixelX, pixelY), zoom);
+                var pointArrow1 = map.pixelToLngLat(new AMap.Pixel(pixelX1, pixelY1), zoom);
+
+                var pointList1 = [];
+                var pointList2 = [];
+
+                //箭头折线路径
+                pointList1.push(pointArrow);
+                pointList1.push(new AMap.LngLat(polyline[polyline.length - 1][0],polyline[polyline.length - 1][1]));
+
+                pointList2.push(pointArrow1);
+                pointList2.push(new AMap.LngLat(polyline[polyline.length - 1][0],polyline[polyline.length - 1][1]));
+
+                var arrowLine1 = new AMap.Polyline({
+                    path:pointList1, //设置线覆盖物路径
+                    strokeColor:color, //线颜色
+                    strokeOpacity:1, //线透明度
+                    strokeWeight:2, //线宽
+                    strokeStyle:"solid", //线样式
+                    strokeDasharray:[10,5] //补充线样式
+                });
+                arrowLine1.setMap(map);
+
+                var arrowLine2 = new AMap.Polyline({
+                    path:pointList2, //设置线覆盖物路径
+                    strokeColor:color, //线颜色
+                    strokeOpacity:1, //线透明度
+                    strokeWeight:2, //线宽
+                    strokeStyle:"solid", //线样式
+                    strokeDasharray:[10,5] //补充线样式
+                });
+                arrowLine2.setMap(map);
+            }
+
+        }
+
+        function addLine(arr, color){
+            if(arr.length > 1){
+                var lineArr = new Array();//创建线覆盖物节点坐标数组
+                for(var i=0;i<arr.length;i++)
+                {
+                    lineArr.push(new AMap.LngLat(arr[i][0],arr[i][1]));
+                }
+                var polyline = new AMap.Polyline({
+                    path:lineArr, //设置线覆盖物路径
+                    strokeColor:color, //线颜色
+                    strokeOpacity:1, //线透明度
+                    strokeWeight:2, //线宽
+                    strokeStyle:"solid", //线样式
+                    strokeDasharray:[10,5] //补充线样式
+                });
+                polyline.setMap(map);
+            }
+        }
+
+    </script>
+
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+    <style>
+        .layui-table-tool{
+       height: 60px;
+    }
+  </style>
+</head>
+
+<body>
+    {include file="public/nav" /}
+    <div class="x-body">
+        <table id="data_table" lay-filter="data_table"></table>
+    </div>
+</body>
+
+<script type="text/html" id="table_toolbar">
+    <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-danger" lay-event="getCheckData">
+      <i class="layui-icon"></i>批量删除
+    </button>
+    <button class="layui-btn"  lay-event="add">
+      <i class="layui-icon"></i>备份
+    </button>
+  </div>
+</script>
+
+<script type="text/html" id="table_action">
+  <a title="删除" class="layui-btn-danger layui-btn layui-btn-xs" lay-event="del">
+    <i class="layui-icon">&#xe640;</i> 删除
+  </a>
+</script>
+
+
+<script>
+    layui.use('table', function() {
+        var url = "{:url('DataBackup/index_data')}";
+        var table = layui.table;
+        table.render({
+            elem: '#data_table',
+            url: url,
+            page: true,
+            toolbar: '#table_toolbar',
+            defaultToolbar: ['filter'],
+            limit: 10,
+            cols: [
+                [{
+                    type: 'checkbox',
+                    width: 50
+                }, {
+                    field: 'download',
+                    title: '备份名称'
+                }, {
+                    field: 'size',
+                    title: '文件大小',
+                    width: 120
+                }, {
+                    field: 'handle',
+                    title: '操作',
+                    width: 100,
+                    toolbar: '#table_action'
+                }]
+            ]
+        });
+
+        table.on('tool(data_table)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            if (layEvent === 'del') {
+                layer.confirm('删除后不可恢复，请确认', function(index) {
+                    $.post('{:url("DataBackup/delete")}', {
+                        'fileName': data.name
+                    }, function(data) {
+                        if (data.code === 1) {
+                            layer.msg(data.msg, {
+                                icon: 1
+                            });
+                            setTimeout(function() {
+                                table.reload('data_table', {});
+                            }, 1000);
+                        } else {
+                            msgFaild(data.msg);
+                        }
+                    }, 'json');
+                    layer.close(index);
+                });
+            }
+        });
+
+        table.on('toolbar(data_table)', function(obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    var names, arr = [];
+                    $.each(data, function(i) {
+                        arr.push(data[i].name);
+                    });
+                    names = arr.join(',');
+                    delAll(names);
+                    break;
+                case 'add':
+                    var url = '{:url("DataBackup/add")}';
+                    $.post(url, function(data) {
+                        if (data.code === 1) {
+                            layer.msg(data.msg, {
+                                icon: 1
+                            });
+                            setTimeout(function() {
+                                table.reload('data_table', {});
+                            }, 1000);
+                        } else {
+                            msgFaild(data.msg);
+                        }
+                    });
+                    break;
+            };
+        });
+
+    });
+
+    function tableReload() {
+        layui.table.reload('data_table', {});
+    }
+
+    function delAll(names) {
+        layer.confirm('删除后不可恢复，请确认', function(index) {
+            $.post('{:url("DataBackup/deleteAll")}', {
+                'name': names
+            }, function(data) {
+                if (data.code === 1) {
+                    layer.msg(data.msg, {
+                        icon: 1
+                    });
+                    setTimeout(function() {
+                        tableReload();
+                    }, 1000);
+                } else {
+                    msgFaild(data.msg);
+                }
+            }, 'json');
+        });
+    }
+</script>
+
+
+</html>

@@ -1,0 +1,405 @@
+<div class="layui-form-item">
+  <div class="layui-inline">
+    <label class="layui-form-label">
+        <span class="x-red">*</span>巡视日期
+    </label>
+    <div class="layui-input-inline">
+      <input type="text" value="{$model.day_str}" name="day_str" id="day_str" datatype="*" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择巡视日期</span>
+    </div>
+  </div>
+
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>巡视序号
+    </label>
+    <div class="layui-input-inline">
+      <select name="view_number" id="view_number" datatype="*" lay-search lay-filter="view_number">
+        <option value="">无</option>
+        {foreach name="view_number_list" item="item"}
+          <option value="{$item.key}" {eq name="model.view_number" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择巡视序号</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  layui.use('form', function() {
+    var form = layui.form; //获取form模块
+    //监听提交按钮
+    form.on('select(view_number)', function(data) {
+      $.ajax({
+        url: "{:url('BirdSupervise/findPublic')}",
+        type: "post",
+        dataType: "json",
+        data: {
+          day: $('#day_str').val(),
+          No: data.value
+        },
+        success: function(res) {
+          if (res.status === true) {
+            reAssignPublic(res.data)
+            form.render();
+          }
+        }
+      });
+    });
+  });
+
+  function reAssignPublic(data) {
+    $('#worker1').val(data['worker1']);
+    $('#worker2').val(data['worker2']);
+    $('#weather1').val(data['weather1']);
+    $('#weather2').val(data['weather2']);
+    $('#temperature').val(data['temperature']);
+    $('#humidity').val(data['humidity']);
+    $('#pressure').val(data['pressure']);
+    $('#wind_direction').val(data['wind_direction']);
+    $('#wind_power').val(data['wind_power']);
+  }
+</script>
+
+<div class="layui-form-item">
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>巡视人员一
+    </label>
+    <div class="layui-input-inline">
+      <select name="worker1" datatype="*" id="worker1" lay-search>
+        <option value="">无</option>
+        {foreach name="worker_list" item="item"}
+          <option value="{$item.key}" {eq name="model.worker1" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择巡视人员</span>
+    </div>
+  </div>
+
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>巡视人员二
+    </label>
+    <div class="layui-input-inline">
+      <select name="worker2" datatype="*" id="worker2" lay-search>
+        <option value="">无</option>
+        {foreach name="worker_list" item="item"}
+          <option value="{$item.key}" {eq name="model.worker2" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择巡视人员</span>
+    </div>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>天气情况一
+    </label>
+    <div class="layui-input-inline">
+      <select name="weather1" datatype="*" id="weather1" lay-search>
+        <option value="无">无</option>
+        {foreach name="weather1_list" item="item"}
+          <option value="{$item.value}" {eq name="model.weather1" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择天气情况</span>
+    </div>
+  </div>
+
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>天气情况二
+    </label>
+    <div class="layui-input-inline">
+      <select name="weather2" datatype="*" id="weather2" lay-search>
+        <option value="无">无</option>
+        {foreach name="weather2_list" item="item"}
+          <option value="{$item.value}" {eq name="model.weather2" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择天气情况</span>
+    </div>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>温度
+    </label>
+    <div class="layui-input-inline w100">
+      <input type="text" value="{$model.temperature}" name="temperature" id="temperature" datatype="*" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip ">请填写温度</span>
+    </div>
+  </div>
+
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>湿度
+    </label>
+    <div class="layui-input-inline w100">
+      <select name="humidity" datatype="*" id="humidity" lay-search>
+        <option value="">无</option>
+        {foreach name="humidity_list" item="item"}
+          <option value="{$item.value}" {eq name="model.humidity" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择湿度</span>
+    </div>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>风向
+    </label>
+    <div class="layui-input-inline w100">
+      <select name="wind_direction" datatype="*" id="wind_direction" lay-search>
+      <option value="">无</option>
+      {foreach name="wind_direction_list" item="item"}
+        <option value="{$item.value}" {eq name="model.wind_direction" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择风向</span>
+    </div>
+  </div>
+
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>风力
+    </label>
+    <div class="layui-input-inline w100">
+      <select name="wind_power" datatype="*" id="wind_power" lay-search>
+        <option value="">无</option>
+        {foreach name="wind_power_list" item="item"}
+          <option value="{$item.value}" {eq name="model.wind_power" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip">请选择风力</span>
+    </div>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>气压
+  </label>
+  <div class="layui-input-inline w100">
+    <input type="text" value="{$model.pressure}" name="pressure" id="pressure" datatype="*" autocomplete="off" class="layui-input">
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip ">请填写气压</span>
+  </div>
+</div>
+
+<hr>
+
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>巡视时间
+  </label>
+  <div class="layui-input-inline">
+    <input type="text" value="{$model.time_str}" name="time_str" id="time_str" datatype="*" autocomplete="off" class="layui-input">
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip ">请选择巡视时间</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>置信度
+  </label>
+  <div class="layui-input-inline">
+    <select name="realness" id="realness" datatype="*" lay-search>
+      {foreach name="realness_list" item="item"}
+        <option value="{$item.value}" {eq name="model.realness" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择置信度</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>鸟情描述
+  </label>
+  <div class="layui-input-inline">
+    <select name="describe" id="describe" datatype="*" lay-search>
+      {foreach name="describe_list" item="item"}
+        <option value="{$item.value}" {eq name="model.describe" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择鸟情描述</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>飞行高度
+  </label>
+  <div class="layui-input-inline">
+    <select name="height" id="height" datatype="*" lay-search>
+      <option value="">无</option>
+      {foreach name="height_list" item="item"}
+        <option value="{$item.value}" {eq name="model.height" value="$item['value']" } selected="selected" {/eq}>{$item.value}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择飞行高度</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>鸟类名称
+  </label>
+  <div class="layui-input-inline">
+    <select name="bird_name" id="bird_name" datatype="*" lay-search>
+      <option value="">无</option>
+      {foreach name="bird_name_list" item="item"}
+        <option value="{$item.key}" {eq name="model.bird_name" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择鸟类名称</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>观测区域
+  </label>
+  <div class="layui-input-inline">
+    <select name="area" id="area" datatype="*" lay-search>
+      <option value="">无</option>
+      {foreach name="area_list" item="item"}
+        <option value="{$item.key}" {eq name="$model.area" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <a style="color:#1E9FFF;cursor: pointer" onclick="x_admin_show('添加鸟情区域','{:url('BirdArea/add')}')">新增观测区域</a>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>鸟的数量
+  </label>
+  <div class="layui-input-inline">
+    <input type="text" value="{$model.bird_num}" name="bird_num" id="bird_num" datatype="*" autocomplete="off" class="layui-input">
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip ">请填写鸟的数量</span>
+  </div>
+</div>
+
+{foreach name="renderHTML" item="item"}{$item}{/foreach}
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>录入人员
+  </label>
+  <div class="layui-input-inline">
+    <select name="aid" datatype="*" id="aid" lay-search>
+      <option value="">无</option>
+      {foreach name="entering_list" item="item"}
+        <option value="{$item.key}" {eq name="model.aid" value="$item['key']" } selected="selected" {/eq}>{$item.value}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择录入人员</span>
+  </div>
+</div>
+
+<div class="layui-form-item layui-form-text">
+  <label class="layui-form-label">备注</label>
+  <div class="layui-input-inline w300">
+    <textarea id="remarks" name="remarks" placeholder="请输入备注" class="layui-textarea h100">{$model.remarks}</textarea>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label"></label>
+  <button class="layui-btn" type="submit">提交</button>
+</div>
+
+<script>
+  layui.use('laydate', function() {
+    var laydate = layui.laydate;
+    laydate.render({ elem: '#day_str', format: 'yyyy/M/d' });
+    laydate.render({ elem: '#time_str', type: 'time', format: "H:mm" });
+  });
+</script>
+
+<script>
+  $(function() {
+    $(".mainform").Validform({
+      tiptype: function(msg, o, cssctl) {
+        if(!o.obj.is("form")){
+          var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+          cssctl(objtip, o.type);
+          objtip.html(msg);
+        }
+        else{
+          var objtip = o.obj.find("#msgdemo");
+          cssctl(objtip, o.type);
+          objtip.html(msg);
+        }
+      },
+      ajaxPost: true,
+      callback: function(data) {
+        if(data.code == 1){
+          layer.alert(data.msg, { icon: 6 }, function() {
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.location.reload();
+            parent.layer.close(index);
+          });
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }
+    });
+
+  });
+</script>
+
+<style>
+  .laydate-time-list{padding-bottom:0;overflow:hidden}
+  .laydate-time-list>li{width:50%!important;}
+  .laydate-time-list>li:last-child { display: none;}
+</style>

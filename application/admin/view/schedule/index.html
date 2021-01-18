@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('Schedule/index')}">
+       <!-- <input class="layui-input" placeholder="开始时间" name="starting_time" id="starting_time" value="{$starting_time}">
+        <input class="layui-input" placeholder="截止时间" name="end_time" id="end_time" value="{$end_time}">
+        <input type="text" name="keyword" placeholder="请输入鸟名" autocomplete="off" class="layui-input" value="{$keyword}">-->
+        &nbsp;
+        状态：
+        <div class="layui-input-inline">
+          <select name="is_complete" class="w80" lay-search>
+            {foreach name="typeList" item="item"}
+            <option value="{$item.value}" {eq name="item.value" value="$is_complete" }selected{/eq}>{$item.name}</option>
+            {/foreach}
+            <!--<option value="-1">全部</option>-->
+            <!--<option value="0">未完成</option>-->
+            <!--<option value="1">已完成</option>-->
+          </select>
+        </div>
+        <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <button class="layui-btn layui-btn-danger" onclick="delAll()">
+        <i class="layui-icon"></i>批量删除
+      </button>
+      <button class="layui-btn" onclick="x_admin_show('添加工作计划表记录','{:url('Schedule/add')}',600)">
+        <i class="layui-icon"></i>添加
+      </button>
+      <!--<a class="layui-btn layui-btn-normal" href="{:url('BirdExpulsion/index',['act'=>'export_excel',  'begin_day'=>$begin_day,'end_day'=>$end_day,'bird_name'=>$bird_name,'bird_drive_level'=>$bird_drive_level,'bird_type'=>$bird_type])}">-->
+        <!--<i class="layui-icon">&#xe60a;</i>导出excel-->
+      <!--</a>-->
+      <span class="x-right" style="line-height:40px">共有数据：{$totalRows} 条</span>
+    </xblock>
+    <table class="layui-table" id="dataTable">
+      <thead>
+        <tr>
+          <th>
+            <div class="layui-unselect header layui-form-checkbox" lay-skin="primary">
+              <i class="layui-icon">&#xe605;</i>
+            </div>
+          </th>
+          <th>编号</th>
+          <th>事件</th>
+          <th>计划处理时间</th>
+          <th>是否完成</th>
+          <th>备注</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {foreach name="list" item="item"}
+          <tr>
+            <td>
+              <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$item.id}'>
+                <i class="layui-icon">&#xe605;</i>
+              </div>
+            </td>
+            <td>{$item.id}</td>
+            <td>{$item.event}</td>
+            <td>{$item.deal_time}</td>
+            <td>
+              {eq name="item.is_complete" value="1"}
+              <span class="layui-badge layui-bg-blue">已完成</span>
+              {else/}
+              <span class="layui-badge-rim layui-bg-gray">未完成</span>
+              {/eq}
+            </td>
+            <td>{$item.remarks}</td>
+            <td class="td-manage">
+              <a title="编辑工作计划表记录" onclick="x_admin_show('编辑工作计划表','{:url('Schedule/edit',['id'=>$item['id']])}',600)" href="javascript:;" class="layui-btn layui-btn-xs">
+                  <i class="layui-icon">&#xe642;</i> 编辑
+              </a>
+              <a title="删除工作计划表记录" onclick="member_del(this,'{$item.id}')" href="javascript:;" class="layui-btn-danger layui-btn layui-btn-xs">
+                  <i class="layui-icon">&#xe640;</i> 删除
+              </a>
+            </td>
+          </tr>
+        {/foreach}
+      </tbody>
+    </table>
+
+    <div class="page">{$page}</div>
+  </div>
+</body>
+
+<script>
+  //表格拖拽功能实现
+  // initTableDnD();
+
+  function member_del(obj, id) {
+    layer.confirm('确认要删除吗？', function(index) {
+      $.post('{:url("Schedule/doDel")}', { 'ids': id }, function(data) {
+        if(data.code == 1){
+          layer.msg(data.msg, { icon: 1, time: 1000 });
+          setTimeout( function(){ window.location.reload(); }, 1000);
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+
+  function delAll(argument) {
+    var data = tableCheck.getData();
+    layer.confirm('确认要删除吗？' + data, function(index) {
+      $.post('{:url("Schedule/doDel")}', { 'ids': data.join(",") }, function(data) {
+        if(data.code == 1){
+          layer.msg('删除成功', { icon: 1 });
+          setTimeout( function(){ window.location.reload(); }, 1000);
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+
+  // function initTableDnD(){
+  //   $("#dataTable").tableDnD({
+  //     //滚动的速度
+  //     scrollAmount:10,
+  //     onDragClass:'highlight',
+  //     //当拖动排序完成后
+  //     onDrop: function(table,row) {
+  //       console.log('ondrop',table);
+  //       console.log('ondrop',row);
+  //     },
+  //     onDragStart:function(table,row){
+  //       console.log('ondragstart',table);
+  //       console.log('ondragstart',row);
+  //     },
+  //   });
+  // }
+</script>
+
+</html>

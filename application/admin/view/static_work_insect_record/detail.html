@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+
+
+</head>
+
+<body class="bg_f5">
+  <div class="x-body  ma0">
+    <div class="layui-card">
+      <div class="layui-card-header">作业信息</div>
+      <div class="layui-card-body">
+        <table class="layui-table">
+
+          <tbody>
+            <tr>
+              <td class="bg_f5">日期</td>
+              <td>{$model.working_date|date="Y-m-d",###}</td>
+              <td class="bg_f5">时段</td>
+              <td>{$model.time_period}</td>
+              <td class="bg_f5">开始时间</td>
+              <td>{$model.start_time|date="H:i",###}</td>
+              <td class="bg_f5">结束时间</td>
+              <td>{$model.end_time|date="H:i",###}</td>
+            </tr>
+            <tr>
+              <td class="bg_f5">喷药次数代号</td>
+              <td>{$model.spary_times}</td>
+              <td class="bg_f5">用水量（吨）</td>
+              <td>{$model.water_consumption}</td>
+              <td class="bg_f5">药剂名称1</td>
+              <td>
+                {empty name="model.pharmacy_name1"}
+                  --
+                {else/}
+                  {$model.pharmacy_name1}
+                {/empty}
+              </td>
+              <td class="bg_f5">药剂1用量（ml）</td>
+              <td>
+                {empty name="model.dosage1"}
+                  --
+                {else/}
+                  {$model.dosage1}
+                {/empty}
+              </td>
+            </tr>
+            <tr>
+              <td class="bg_f5">药剂名称2</td>
+              <td>
+                {empty name="model.pharmacy_name2"}
+                  --
+                {else/}
+                  {$model.pharmacy_name2}
+                {/empty}
+              </td>
+              <td class="bg_f5">药剂2用量（ml）</td>
+              <td>
+                {empty name="model.dosage2"}
+                  --
+                {else/}
+                  {$model.dosage2}
+                {/empty}
+              </td>
+              <td class="bg_f5">药剂名称3</td>
+              <td>
+                {empty name="model.pharmacy_name3"}
+                  --
+                {else/}
+                  {$model.pharmacy_name3}
+                {/empty}
+              </td>
+              <td class="bg_f5">药剂3用量（ml）</td>
+              <td>
+                {empty name="model.dosage3"}
+                  --
+                {else/}
+                  {$model.dosage3}
+                {/empty}
+              </td>
+
+            </tr>
+            <tr>
+              <td class="bg_f5">管理员1</td>
+              <td>{$model.manager1}</td>
+              <td class="bg_f5">管理员2</td>
+              <td>{$model.manager2}</td>
+              <td class="bg_f5">服务商负责人</td>
+              <td>{$model.service_provider}</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="layui-card">
+      <div class="layui-card-header">作业统计</div>
+      <div class="layui-card-body">
+        <table class="layui-table w600">
+          <tr>
+            <td class="bg_f5">消杀区域</td>
+            <td class="bg_f5">飞行区域方位</td>
+            <td class="bg_f5">消杀面积（m2）</td>
+            <td class="bg_f5">备注</td>
+          </tr>
+          {foreach name="list" item="item"}
+          <tr>
+            <td>{$item.maintain_area}</td>
+            <td>{$item.flight_area}</td>
+            <td>{$item.work_area}</td>
+            <td>{$item.remarks}</td>
+          </tr>
+          {/foreach}
+          <tr>
+            <td class="bg_f5" colspan="2">总面积</td>
+            <td colspan="2">{$model.area_all}</td>
+          </tr>
+          <tr>
+            <td class="bg_f5" colspan="2">每亩地用药量1(ml/亩)</td>
+            <td colspan="2">{$model.avg_dosage1}</td>
+          </tr>
+          <tr>
+            <td class="bg_f5" colspan="2">每亩地用药量2(ml/亩)</td>
+            <td colspan="2">{$model.avg_dosage2}</td>
+          </tr>
+          {notempty name="model.avg_dosage3"}
+          <tr>
+            <td class="bg_f5" colspan="2">每亩地用药量3(ml/亩)</td>
+            <td colspan="2">{$model.avg_dosage3}</td>
+          </tr>
+          {/notempty}
+          <tr>
+            <td class="bg_f5" colspan="2">每亩地用水量（kg/亩）</td>
+            <td colspan="2">{$model.avg_water}</td>
+          </tr>
+          <tr>
+            <td class="bg_f5" colspan="2">是否达标</td>
+            <td colspan="2">
+              {eq name="model.is_compliance" value="1"}
+                达标
+              {else/}
+                不达标
+              {/eq}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+</html>

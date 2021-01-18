@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+  <div class="x-body">
+    <div class="layui-row mt5">
+
+      <div class="layui-col-lg5 layui-col-md5">
+        <form class="layui-form mainform" method="post">
+          <div class="layui-form-item">
+            <label class="layui-form-label">
+              <span class="x-red">*</span>检查项目
+            </label>
+            <div class="layui-input-inline">
+              <select name="check_item" id="check_item" datatype="*" lay-search>
+                  <option value="">无</option>
+                  {foreach name="part_list" item="item"}
+                      <option value="{$item}" {eq name="data.check_item" value="$item" } selected="selected" {/eq}>{$item}</option>
+                  {/foreach}
+              </select>
+            </div>
+            <div class="layui-form-mid layui-word-aux w100">
+              <span class="Validform_checktip">请选择检查项目</span>
+            </div>
+          </div>
+
+          <div class="layui-form-item">
+            <label class="layui-form-label">
+              <span class="x-red">*</span>处理方式
+            </label>
+            <div class="layui-input-inline">
+              <select name="process_method" id="process_method" datatype="*" lay-search>
+                  <option value="">无</option>
+                  {foreach name="parts_status_list" item="item"}
+                      <option value="{$item.key}" {eq name="data.process_method" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+                  {/foreach}
+              </select>
+            </div>
+            <div class="layui-form-mid layui-word-aux w100">
+              <span class="Validform_checktip">请选择处理方式</span>
+            </div>
+          </div>
+
+          <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block w300">
+              <input type="text" value="{$data.remarks}" name="remarks" id="remarks" autocomplete="off" class="layui-input">
+            </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label"></label>
+              <button class="layui-btn" type="submit" id="transmit">
+                  提交
+              </button>
+            </div>
+        </form>
+      </div>
+
+
+    </div>
+  </div>
+</body>
+
+<script>
+  $('#transmit').on('click', function() {
+    var data = {};
+    data['check_item'] = $('#check_item option:selected').val();
+    data['process_method'] = $('#process_method option:selected').val();
+    data['remarks'] = $('#remarks').val();
+    window.parent.addData(data);
+    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+    parent.layer.close(index);
+  });
+</script>
+
+</html>

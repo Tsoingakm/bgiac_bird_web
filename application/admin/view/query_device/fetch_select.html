@@ -1,0 +1,4 @@
+<option value="">全部</option>
+{foreach name="list" item="item"}
+<option value="{$item.value}" {eq name="item.value" value="$value"}selected{/eq} >{$item.value}</option>
+{/foreach}

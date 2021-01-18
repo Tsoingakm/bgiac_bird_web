@@ -1,0 +1,64 @@
+<div class="layui-form-item layui-form-text">
+    <label class="layui-form-label"><span class="x-red">*</span>工作内容</label>
+    <div class="layui-input-inline w260">
+        <input type="text" value="{$model.content}" name="content" id="content" datatype="*" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+        <span class="Validform_checktip">请填写工作内容</span>
+    </div>
+</div>
+
+<div class="layui-form-item layui-form-text">
+    <label class="layui-form-label"><span class="x-red">*</span>内容明细</label>
+    <div class="layui-input-inline w260">
+        <textarea id="details" name="details" placeholder="请输入内容明细" datatype="*" class="layui-textarea h100">{$model.details}</textarea>
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+        <span class="Validform_checktip">请填写内容明细</span>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <button class="layui-btn" type="submit">
+        提交
+    </button>
+</div>
+
+<script>
+    $(function() {
+        $(".mainform").Validform({
+            tiptype: function(msg, o, cssctl) {
+                if(!o.obj.is("form")){
+                    var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                }
+                else{
+                    var objtip = o.obj.find("#msgdemo");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                }
+            },
+            ajaxPost: true,
+            callback: function(data) {
+                if (data.code == 1){
+                    layer.alert(data.msg, { icon: 6 }, function() {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.location.reload();
+                        parent.layer.close(index);
+                    });
+                }
+                else{
+                    msgFaild(data.msg);
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    .laydate-time-list{padding-bottom:0;overflow:hidden}
+    .laydate-time-list>li{width:50%!important;}
+    .laydate-time-list>li:last-child { display: none;}
+</style>

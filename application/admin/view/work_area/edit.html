@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+<div class="x-body">
+    <div class="map_main pos_r">
+
+        <div class="pos_r map_container" id="container"></div>
+        <div class="selectbox">
+            <form class="layui-form x-so mainform" style="display: inline-block;margin-right: 10px" method="post" action="{:url('WorkArea/doEdit')}">
+                <!--<input class="layui-input" placeholder="开始时间" name="starting_time" id="starting_time" value="{$starting_time}">
+                <input class="layui-input" placeholder="截止时间" name="end_time" id="end_time" value="{$end_time}">
+                <input type="text" name="keyword" placeholder="请输入鸟名" autocomplete="off" class="layui-input" value="{$keyword}">-->
+                <input type="hidden" name="id" value="{$model.id}">
+                <span class="x-red">*</span>区域名称：
+                <div class="layui-input-inline">
+                    <input class="layui-input" style="width:180px;" placeholder="请填写区域名称" datatype="*" name="area_name" id="area_name" value="{$model.area_name}" autocomplete="off">
+                </div>
+                &nbsp;
+                是否审核通过：
+                <div class="layui-input-inline">
+                    <input type="checkbox" name="valid" value="1" lay-skin="switch" lay-text="通 过|不通过" {eq name="model.valid" value="1" }checked{/eq}>
+                </div>
+                <input type="hidden" id="points" name="points">
+                <button class="layui-btn" type="submit" style="margin-left: 10px;">完成</button>
+            </form>
+            <button class="layui-btn" onclick="goBack()">上一步</button>
+            <button class="layui-btn" onclick="reset()">重绘</button>
+
+        </div>
+        <div class="set_box set_box_map">
+            <div class="d2" style="display: none" onclick="changeMap(2)">
+                <img src="__STATIC__/images/d2map.png"/>
+                <span>地图</span>
+            </div>
+            <div class="d3" onclick="changeMap(3)">
+                <img src="__STATIC__/images/d3map.png"/>
+                <span>卫星</span>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        var map = null;//地图对象
+        var jsonStr = '{$areaList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var areaList = eval("(" + jsonStr + ")");
+        jsonStr = '{$insectList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var workList = eval("(" + jsonStr + ")");
+    </script>
+</div>
+</body>
+
+{include file="public/inc_amap"/}
+<script>
+    var map;
+    var pointList = [];
+    var points = "{$model.coordinates_gcj02}";
+    var icon;
+    var markerList = [];
+    var polygon;
+    $(function () {
+        initWindow();
+        $(window).resize(function () {
+            initWindow();
+        });
+        map = clickMapInit();
+        map.on('click', showInfoClick);
+
+        icon = new AMap.Icon({
+            // 图标尺寸
+            size: new AMap.Size(10, 10),
+            // 图标的取图地址
+            image: '__STATIC__/images/pointer.png',
+            // 图标所用图片大小
+            imageSize: new AMap.Size(10, 10),
+        });
+
+        if(points && points != ''){
+            var pointStrList = points.split(' ');
+            for(let i=0; i<pointStrList.length; i++){
+                var point = pointStrList[i].split(',');
+                addMarker(point);
+                pointList.push(point);
+            }
+            addPolygon(pointList);
+            changePointsValue(pointList);
+        }
+
+        $(".mainform").Validform({
+            tiptype: function (msg, o, cssctl) {
+                //msg：提示信息; o:{obj:*,type:*,curform:*}, obj指向的是当前验证的表单元素（或表单对象），type指示提示的状态，值为1、2、3、4， 1：正在检测/提交数据，2：通过验证，3：验证失败，4：提示ignore状态, curform为当前form对象; cssctl:内置的提示信息样式控制函数，该函数需传入两个参数：显示提示信息的对象 和 当前提示的状态（既形参o中的type）;
+                if (!o.obj.is("form")) {
+                    //验证表单元素时o.obj为该表单元素，全部验证通过提交表单时o.obj为该表单对象;
+                    var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                } else {
+                    console.log("o.obj is form");
+                    var objtip = o.obj.find("#msgdemo");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                }
+            },
+            ajaxPost: true,
+            beforeSubmit:function(curform){
+                $("#spary_times").removeAttr("disabled");
+            },
+            callback: function (data) {
+                console.log(data);
+                if (data.code == 1) {
+                    layer.alert(data.msg, {
+                        icon: 6
+                    }, function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.location.reload();
+                        parent.layer.close(index);
+                    });
+                } else {
+                    msgFaild(data.msg);
+                }
+            }
+        });
+    });
+    //初始化地图窗口
+    function initWindow() {
+        $(".map_main").height($(window).height() - 40);
+    }
+
+    function showInfoClick(e){
+        var point = [e.lnglat.getLng(), e.lnglat.getLat()];
+        pointList.push(point);
+        addMarker(point);
+        addPolygon(pointList);
+        changePointsValue(pointList);
+    }
+
+    function changePointsValue(pointList){
+        var pointStrList = [];
+        var strValue = '';
+        for(let i=0; i<pointList.length; i++){
+            var pointStr = pointList[i].join(',');
+            pointStrList.push(pointStr);
+        }
+        if(pointStrList.length > 0){
+            strValue = pointStrList.join(' ');
+        }
+        $('#points').val(strValue);
+    }
+
+    function addMarker(point) {
+        var marker = new AMap.Marker({
+            icon: icon,
+            position: point,
+            anchor: 'center',
+            offset: new AMap.Pixel(0, 0)
+        });
+        marker.setMap(map);
+        markerList.push(marker);
+    }
+
+    function addPolygon(arr){
+        if(polygon){
+            map.remove(polygon);
+            // polygon.setMap(null);
+        }
+        if(arr.length > 1){
+            var lineArr = new Array();//创建线覆盖物节点坐标数组
+            var color="red";
+            for(var i=0;i<arr.length;i++)
+            {
+                lineArr.push(new AMap.LngLat(arr[i][0],arr[i][1]));
+            }
+            polygon = new AMap.Polygon({
+                path:lineArr, //设置线覆盖物路径
+                strokeColor:""+color+"", //线颜色
+                strokeOpacity:0.2, //线透明度
+                strokeWeight:2, //线宽
+                strokeStyle:"solid", //线样式
+                strokeDasharray:[10,5], //补充线样式
+                fillColor: 'blue',
+                fillOpacity: 0.2
+            });
+            map.add(polygon);
+            // polygon.setMap(map);
+        }
+    }
+
+    function goBack(){
+        if(pointList.length > 0){
+            pointList.splice(pointList.length - 1, 1);
+            markerList[markerList.length - 1].setMap(null);
+            markerList.splice(markerList.length - 1, 1);
+            map.remove(polygon);
+            addPolygon(pointList);
+        }
+        changePointsValue(pointList);
+    }
+
+    function reset(){
+        pointList = [];
+        for(let i=0; i<markerList.length; i++){
+            markerList[i].setMap(null);
+        }
+        markerList = [];
+        map.remove(polygon);
+        addPolygon(pointList);
+        changePointsValue(pointList);
+    }
+</script>
+
+</html>

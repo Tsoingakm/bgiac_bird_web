@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+  <style>
+      .layui-laypage a, .layui-laypage span{
+          margin: auto 5px !important;
+          height: auto !important;
+          line-height: 1 !important;
+      }
+  </style>
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row tl">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('DeviceOverhaul/index')}">
+        <input class="layui-input" placeholder="开始时间" name="starting_time" id="starting_time" value="{$starting_time}">
+        <input class="layui-input" placeholder="截止时间" name="end_time" id="end_time" value="{$end_time}">
+        <div class="layui-inline">
+          <select name="device_id" lay-search lay-verify="required" lay-filter="device" id="device">
+            {foreach name="device_list" item="item"}
+              <option value="{$item.device_id}" {eq name="item.device_id" value="$device_id"} selected {/eq}>{$item.name}</option>
+            {/foreach}
+          </select>
+        </div>
+        <div class="layui-inline">
+          <select name="part_id" lay-search lay-verify="required" lay-filter="parts" id="part">
+          </select>
+        </div>
+        <script>
+          $(function(){
+              layui.use('form', function(){
+              var form = layui.form;
+              var url = '{:url('DeviceOverhaul/getParts')}';
+              var id  = $('#device option:selected').val();
+              $.post(url, { id : id }, function(res){
+                  $('#part').html("");
+                  $.each(res, function(key, part) {
+                    var part_id = '{$part_id}';
+                    var option = $("<option>").val(part.id).text(part.name);
+                    $("#part").append(option);
+                    $('#part').val(part_id)
+                    form.render('select');
+                  });
+                })
+              });
+          });
+
+          layui.use('form', function(){
+            var form = layui.form;
+            form.on('select(device)', function(data){
+              var url = '{:url('DeviceOverhaul/getParts')}';
+              var id  = data.value;
+              $.post(url, { id : id }, function(res){
+                $('#part').html("");
+                $.each(res, function(key, part) {
+                  var option = $("<option>").val(part.id).text(part.name);
+                  $("#part").append(option);
+                  form.render('select');
+                });
+              })
+            });
+          });
+        </script>
+        <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <a class="layui-btn layui-btn-normal" href="{:url('DeviceOverhaul/index',['act'=>'export_excel', 'starting_time'=>$starting_time, 'end_time'=>$end_time, 'keyword'=>$keyword])}">
+        <i class="layui-icon">&#xe60a;</i>导出excel
+      </a>
+      <span class="x-right" style="line-height:40px">共有数据：{$total}条</span>
+    </xblock>
+    <table class="layui-table">
+      <thead>
+        <tr>
+          <th>设备名称</th>
+          <th>设备编号</th>
+          <th>零部件名称</th>
+          <th>是否已检修</th>
+        </tr>
+      </thead>
+      <tbody id="data-body">
+      </tbody>
+    </table>
+
+    <div class="page">
+      <div id="data-page"></div>
+    </div>
+  </div>
+
+</body>
+
+<script>
+  layui.use('laydate', function() {
+    var laydate = layui.laydate;
+    laydate.render({ elem: '#starting_time' ,  max: '{$end_time}' });
+    laydate.render({ elem: '#end_time' ,       max: '{$max_time}' });
+  });
+</script>
+
+<script>
+    var data = {$list};
+    var content = new Array();
+    $.each(data, function(index, item){
+        var html = "";
+        html += '<tr>';
+        html +=   '<td>'+ item.device_name +'</td>';
+        html +=   '<td>'+ item.code +'</td>';
+        html +=   '<td>'+ item.part_name +'</td>';
+        if(item.sort > 0){
+            html +=   '<td>'+ item.overhaul +'</td>';
+        }
+        else{
+            html +=   '<td style="color:#F00;">'+ item.overhaul +'</td>';
+        }
+        html += '</tr>';
+        content.push(html);
+    });
+
+    layui.use('laypage', function(){
+        var laypage = layui.laypage;
+        laypage.render({
+          elem: 'data-page'
+          ,limit: 12
+          ,count: content.length
+          ,prev: '<<'
+          ,next: '>>'
+          ,theme: 'device'
+          ,jump: function(obj, first){
+              document.getElementById('data-body').innerHTML = function(){
+                  var arr = []
+                  ,thisData = content.concat().splice(obj.curr*obj.limit - obj.limit, obj.limit);
+                  layui.each(thisData, function(index, item){
+                      arr.push(item);
+                  });
+                  return arr.join('');
+              }();
+          }
+        });
+    });
+</script>
+
+</html>

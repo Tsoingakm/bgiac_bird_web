@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {include file="public/header" /}
+
+</head>
+<body class="login-bg">
+
+<div class="login layui-anim layui-anim-up">
+    <div class="login_logo"></div>
+    <div class="message">{$web.title}后台登录</div>
+    <div id="darkbannerwrap"></div>
+
+    <form method="post" class="layui-form">
+        <input name="login_name" placeholder="用户名" type="text" lay-verify="required" class="layui-input">
+        <hr class="hr15">
+        <input name="pwd" lay-verify="required" placeholder="密码" type="password" class="layui-input">
+        <hr class="hr15">
+        <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
+        <hr class="hr20">
+    </form>
+
+    <div class="tc fs12">{$web.copyright} <br/>技术支持：韶关市宇宸信息科技有限公司</div>
+</div>
+
+<script>
+    $(function () {
+        layui.use('form', function () {
+            var form = layui.form;
+            // layer.msg('玩命卖萌中', function(){
+            //   //关闭后的操作
+            //   });
+            //监听提交
+            form.on('submit(login)', function (data) {
+                // alert(888)
+                url = "{:url('Index/doLogin')}";
+                $.post(url, data.field, function (resData) {
+                    if (resData.code == 1) {
+                        loading(resData.msg);
+                        // console.log('res', resData);
+                        location.href = resData.url;
+                        // location.href = '/bgiac_bird_web/public/index.php/admin/main/index.html';
+                    } else {
+                        msgFaild(resData.msg);
+                    }
+
+                }, 'json');
+                // layer.msg(JSON.stringify(data.field),function(){
+                //     location.href='index.html'
+                // });
+                return false;
+            });
+        });
+    })
+
+
+</script>
+
+
+</body>
+</html>

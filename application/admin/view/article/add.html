@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+
+      <div class="layui-container" style="padding-top: 15px;">
+            <form class="layui-form mainform" method="post" action="{:url('Article/doAdd')}">
+              <input type="hidden" name="addtime" value="{:time()}"> {include file="form/article" /}
+            </form>
+      </div>
+
+</body>
+
+</html>

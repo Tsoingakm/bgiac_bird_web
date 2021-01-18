@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="public/header" /}
+</head>
+<body>
+{include file="public/nav" /}
+
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp"></script>
+<div class="x-body ">
+    <div class="layui-card ">
+        <div class="layui-card-header">KML名称：{$kmlModel.kml_name} <a href="{$kmlModel.kml_path}" download="{$kmlModel.kml_name}.kml"                                                                      class="layui-badge layui-bg-orange ml15">点击下载kml文件</a>
+
+        </div>
+        <div class="layui-card-body pos_r">
+            <div class="container_box container_box_left" id="container" style="height: 300px"></div>
+            <div class="container_box container_box_right">
+                {foreach name="areaList" item="item" key="key"}
+                <p>[{$key+1}] {$item.area_name}</p>
+                {/foreach}
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    // R3NBZ-ERSW4-N24U7-X5MTG-ZCE73-6LBE7
+    var jsonStr = '{$areaList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+    var areaList = eval("(" + jsonStr + ")");
+    var map, scaleControl;
+
+    $(function () {
+        $(".container_box").height($(window).height()-150);
+        map = new qq.maps.Map(
+            document.getElementById("container"),
+            {
+                center: new qq.maps.LatLng(39.914850, 116.403765),
+                zoom: 14
+            }
+        );
+        var scaleControl = new qq.maps.ScaleControl({
+            align: qq.maps.ALIGN.BOTTOM_LEFT,
+            margin: qq.maps.Size(85, 15),
+            map: map
+        });
+        drawLine();
+    });
+
+    function drawLine() {
+        var latMax, lngMax, latLngNum;
+        var latMin,lngMin;
+        latMax = lngMax = latLngNum = 0;
+        latMin=90;
+        lngMin=180;
+        // console.log(areaList);
+        var polygons = new Array();
+        var len = areaList.length;
+        for (var i = 0; i < len; i++) {
+            console.log(areaList[i]);
+            var polygon;
+            var path = [];
+            var lnglat = areaList[i].coordinates_gcj02.split(' ');
+            var textLatMin,textLatMax,textLngMin,textLngMax,textNum;
+            textLatMax = textLngMax = textNum = 0;
+            textLatMin=90;
+            textLngMin=180;
+            lnglat.forEach(function (value, index, array) {
+                latlngArr = value.split(",");
+                latMin=(latlngArr[1]<latMin)?latlngArr[1]:latMin;
+                latMax=(latlngArr[1]>latMax)?latlngArr[1]:latMax;
+                textLatMin=(latlngArr[1]<textLatMin)?latlngArr[1]:textLatMin;
+                textLatMax=(latlngArr[1]>textLatMax)?latlngArr[1]:textLatMax;
+
+                lngMin=(latlngArr[0]<lngMin)?latlngArr[0]:lngMin;
+                lngMax=(latlngArr[0]>lngMax)?latlngArr[0]:lngMax;
+                textLngMin=(latlngArr[0]<textLngMin)?latlngArr[0]:textLngMin;
+                textLngMax=(latlngArr[0]>textLngMax)?latlngArr[0]:textLngMax;
+                latLngNum++;
+                textNum++;
+                path.push(new qq.maps.LatLng(latlngArr[1], latlngArr[0]));
+            });
+            var textCenter=new qq.maps.LatLng((parseFloat(textLatMin)+parseFloat(textLatMax))/2, (parseFloat(textLngMin)+parseFloat(textLngMax))/2);
+            var label = new qq.maps.Label({
+                // offset: qq.maps.Size(100,100),
+                offset: new qq.maps.Size(-10, -14),
+                map: map,
+                content:"["+(i+1)+"]",
+                style: {border:"none",background:"none"},
+                position: textCenter
+            });
+
+            var polygon = new qq.maps.Polygon({
+                path: path,
+                strokeColor: '#000000',
+                strokeWeight: 1,
+                fillColor: qq.maps.Color.fromHex("#FFFF00", 0.3),
+                map: map
+            });
+            polygons.push(polygon);
+        }
+        console.log("latMin:"+latMin);
+        console.log("latMax:"+latMax);
+        console.log("lngMin:"+lngMin);
+        console.log("lngMax:"+lngMax);
+        console.log();
+        //平移地图
+        var newCenter=new qq.maps.LatLng((parseFloat(latMin)+parseFloat(latMax))/2, (parseFloat(lngMin)+parseFloat(lngMax))/2);
+       map.panTo(newCenter);
+    }
+
+</script>
+
+
+</body>
+</html>

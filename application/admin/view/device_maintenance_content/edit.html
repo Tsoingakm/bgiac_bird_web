@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+  <div class="x-body">
+      <div class="layui-row mt5">
+          <div class="layui-col-lg9 layui-col-md9">
+              <form class="layui-form mainform" method="post" action="{:url('DeviceMaintenanceContent/doEdit')}">
+                  <input type="hidden" name="id" value="{$model.id}">
+                  {include file="form/device_maintenance_content" /}
+              </form>
+          </div>
+
+      </div>
+  </div>
+</body>
+
+</html>

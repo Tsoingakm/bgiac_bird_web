@@ -1,0 +1,187 @@
+<div class="layui-form-item">
+    <div class="layui-inline">
+        <label class="layui-form-label">
+            <span class="x-red">*</span>设备编号
+        </label>
+        <div class="layui-input-inline">
+            <!--<input type="text" value="{$model.device_code}" name="device_code" id="device_code" datatype="*" autocomplete="off" class="layui-input">-->
+            <select name="device_code" datatype="*" id="device_code" lay-filter="device_code" lay-search>
+                <option value="">无</option>
+                {foreach name="code_list" item="item"}
+                <option value="{$item.code}" {eq name="model.device_code" value="$item['code']" } selected="selected" {/eq}>{$item.code}</option>
+                {/foreach}
+            </select>
+        </div>
+        <div class="layui-form-mid layui-word-aux w100">
+            <span class="Validform_checktip">请填写设备编号</span>
+        </div>
+    </div>
+
+    <div class="layui-inline">
+        <label class="layui-form-label">
+            <span class="x-red">*</span>工卡编号
+        </label>
+        <div class="layui-input-inline">
+            <input readonly type="text" value="{$model.worker_code}" name="worker_code" id="worker_code" datatype="*" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux w100">
+            <span class="Validform_checktip">请填写工卡编号</span>
+        </div>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <div class="layui-inline">
+        <label class="layui-form-label">
+            <span class="x-red">*</span>维护单位
+        </label>
+        <div class="layui-input-inline">
+            <!--<input type="text" value="{$model.unit}" name="unit" id="unit" datatype="*" autocomplete="off" class="layui-input">-->
+            <select name="unit" datatype="*" id="unit" lay-search>
+                <option value="">无</option>
+                {foreach name="unit_list" item="item"}
+                <option value="{$item.name}" {eq name="model.unit" value="$item['name']" } selected="selected" {/eq}>{$item.name}</option>
+                {/foreach}
+            </select>
+        </div>
+        <div class="layui-form-mid layui-word-aux w100">
+            <span class="Validform_checktip">请填写维护单位</span>
+        </div>
+    </div>
+
+    <div class="layui-inline">
+        <label class="layui-form-label">
+            <span class="x-red">*</span>维护时间
+        </label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$model.maintenance_time}" name="maintenance_time" id="maintenance_time" datatype="*" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux w100">
+            <span class="Validform_checktip">请选择维护时间</span>
+        </div>
+    </div>
+</div>
+
+<hr>
+    <div style="font-size: 16px;text-align: center;">工作内容</div>
+<hr>
+
+<div>
+    {foreach name="contentList" item="item"}
+    <div style="font-weight: 500;font-size: 16px;">{$item.content}</div>
+    <div style="line-height: 2;padding-left: 5px;"><pre>{$item.details}</pre></div>
+        <div class="layui-form-item">
+            {foreach name="item.extras" item="extra"}
+                <div class="layui-inline">{$extra}</div>
+            {/foreach}
+        </div>
+    {/foreach}
+</div>
+
+<hr>
+
+{foreach name="renderHTML" item="item"}{$item}{/foreach}
+
+<!--<div class="layui-form-item layui-form-text">-->
+    <!--<label class="layui-form-label">故障及处理</label>-->
+    <!--<div class="layui-input-inline w500">-->
+        <!--&lt;!&ndash;<textarea id="breakdown" name="breakdown" placeholder="请输入故障及处理" class="layui-textarea h100">{$model.breakdown}</textarea>&ndash;&gt;-->
+        <!--<select name="breakdown" datatype="*" id="breakdown" lay-search>-->
+            <!--<option value="正常">正常</option>-->
+            <!--<option value="其他">其他</option>-->
+        <!--</select>-->
+    <!--</div>-->
+<!--</div>-->
+
+<!--<div class="layui-form-item layui-form-text">-->
+    <!--<label class="layui-form-label">评估意见</label>-->
+    <!--<div class="layui-input-inline w500">-->
+        <!--&lt;!&ndash;<textarea id="comment" name="comment" placeholder="请输入评估意见" class="layui-textarea h100">{$model.comment}</textarea>&ndash;&gt;-->
+        <!--<select name="comment" datatype="*" id="comment" lay-search>-->
+            <!--<option value="正常">正常</option>-->
+            <!--<option value="其他">其他</option>-->
+        <!--</select>-->
+    <!--</div>-->
+<!--</div>-->
+
+<div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">备注</label>
+    <div class="layui-input-inline w500">
+        <textarea id="remark" name="remark" placeholder="请输入备注" class="layui-textarea h100">{$model.remark}</textarea>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <button class="layui-btn" type="submit">提交</button>
+</div>
+
+<script>
+    layui.use('laydate', function() {
+        var laydate = layui.laydate;
+        laydate.render({ elem: '#maintenance_time', type: 'datetime'});
+    });
+</script>
+
+<script>
+    $(function() {
+        $(".mainform").Validform({
+            tiptype: function(msg, o, cssctl) {
+                if(!o.obj.is("form")){
+                    var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                }
+                else{
+                    var objtip = o.obj.find("#msgdemo");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                }
+            },
+            ajaxPost: true,
+            callback: function(data) {
+                if(data.code == 1){
+                    layer.alert(data.msg, { icon: 6 }, function() {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.location.reload();
+                        parent.layer.close(index);
+                    });
+                }
+                else{
+                    msgFaild(data.msg);
+                }
+            }
+        });
+
+        layui.use('form', function(){
+            var form = layui.form;
+            form.on('select(device_code)', function(data){
+                //选择的select对象值；
+                var selectValue = data.value;
+                doGenerateWorkerCode(selectValue);
+            })
+        })
+
+    });
+
+
+
+    function doGenerateWorkerCode(code){
+        var deviceId = $('#device_id').val();
+        $.post('{:url("DeviceMaintenance/generateWorkerCode")}', {'code': code, 'device_id': deviceId}, function(data) {
+            if(data.code == 1){
+                console.log('data', data);
+                $('#worker_code').val(data.data);
+            }
+            else{
+                msgFaild(data.msg);
+            }
+        }, 'json');
+    }
+</script>
+
+<style>
+    .laydate-time-list{padding-bottom:0;overflow:hidden}
+    .laydate-time-list>li{width:50%!important;}
+    .laydate-time-list>li:last-child { display: none;}
+</style>

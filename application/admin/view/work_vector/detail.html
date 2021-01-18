@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+
+<div class="layui-container" style="width:800px;overflow:hidden;margin: 0 auto;">
+    <form class="layui-form mainform " method="post" action="{:url('BirdSupervise/doEdit')}">
+        <input type="hidden" id="id" value="{$model.id}">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                日期
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.working_date}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">
+                    开始时间
+                </label>
+                <div class="layui-input-inline">
+                    <div class="tl layui-form-label w180">
+                        {$model.start_time}
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <label class="layui-form-label">
+                    结束时间
+                </label>
+                <div class="layui-input-inline">
+                    <div class="tl layui-form-label w180">
+                        {$model.end_time}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                工作类型
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.work_type}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                管理员一
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.manager1}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                管理员二
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.manager2}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                服务商负责人
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.service_provider}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                防治对象
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.control_object}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                工作区域
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.maintain_area}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                飞行区方位
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.flight_area}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline w300">
+                <div class="tl layui-form-label w180">
+                    {$model.remarks}
+                </div>
+            </div>
+        </div>
+
+
+        {foreach name="extraDetail" item="item"}
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                {$item.item_name}
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$item.item_value}
+                </div>
+            </div>
+        </div>
+        {/foreach}
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                录入人员
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.staff}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                人员地址经纬度
+            </label>
+            <div class="layui-input-inline">
+                <div class="tl layui-form-label w180">
+                    {$model.lng_gcj02}
+                </div>
+                <div class="tl layui-form-label w180">
+                    {$model.lat_gcj02}
+                </div>
+            </div>
+            <div class="layui-input-inline">
+                {eq name="model.lng_gcj02" value="0"}
+                <div class="layui-form-label tl w180">
+                </div>
+                {else/}
+                <div class="layui-form-label tl w180">
+                    <a onclick="openMap()" style="cursor: pointer;color: #1E9FFF;">查看地图</a>
+                </div>
+                {/eq}
+            </div>
+        </div>
+
+        <script>
+            function openMap(){
+                var id = $('#id').val();
+                var url = '{:url("WorkVector/map")}';
+                url += '?id=' + id;
+                console.log(url);
+                open_with_full_screen('查看位置',url);
+            }
+        </script>
+
+        <style>
+            .laydate-time-list{padding-bottom:0;overflow:hidden}
+            .laydate-time-list>li{width:50%!important;}
+            .laydate-time-list>li:last-child { display: none;}
+            .layui-form-label{width:120px;}
+        </style>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

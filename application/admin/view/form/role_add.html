@@ -1,0 +1,178 @@
+<div class="layui-form-item">
+  <label for="name" class="layui-form-label">
+        角色名称
+    </label>
+  <div class="layui-input-inline">
+    <input type="text" id="ar_name" name="ar_name"
+               autocomplete="off" class="layui-input" datatype="*" value="{$model.ar_name}">
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+      <span class="x-red">*</span>
+      <span class="Validform_checktip ">填写角色名称</span>
+    </div>
+  </div>
+  <div class="layui-form-item layui-form-text">
+    <label for="desc" class="layui-form-label">
+        描述
+    </label>
+    <div class="layui-input-block">
+      <textarea placeholder="请输入内容，500字以内" id="ar_intro" name="ar_intro" class="layui-textarea" maxlength="512">{$model.ar_intro}</textarea>
+    </div>
+  </div>
+
+  <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">
+        拥有权限
+    </label>
+    <table class="layui-table layui-input-block">
+      <tbody>
+        {foreach name="powerList" item="pitem" key="pkey"}
+        <tr>
+          <td rowspan="{:count($pitem['list'])}" class="w160">
+
+            <input type="checkbox" name="ap_codes[]" lay-skin="primary" title="{$pitem.ap_name}"
+                       ap_id="{$pitem.ap_id}" ap_pid="{$pitem.ap_pid}" ap_code="{$pitem.ap_code}" lay-filter="ap_code"
+                       value="{$pitem.ap_code}"
+                       {in name="$pitem.ap_code" value="$model['ap_codes']" }checked="checked" {/in}>
+            </td>
+
+            {foreach name="pitem.list" item="fitem" key="fkey"}
+            {php}$pcount=count($pitem['list']);{/php}
+            {gt name="fkey" value="$pcount"}
+        <tr>
+            {/gt}
+
+          <td width="220">
+            <input type="checkbox" name="ap_codes[]" lay-skin="primary" title="{$fitem.ap_name}"
+                       value="{$fitem.ap_code}"
+                       ap_id="{$fitem.ap_id}" ap_pid="{$fitem.ap_pid}" ap_code="{$fitem.ap_code}" lay-filter="ap_code"
+                       {in name="fitem.ap_code" value="$model['ap_codes']" }checked="checked" {/in}>
+            </td>
+            <td>
+            <div class="layui-input-block">
+              {foreach name="fitem.list" item="item"}
+              <input name="ap_codes[]" lay-skin="primary" type="checkbox" title="{$item.ap_name}"
+                           ap_id="{$item.ap_id}" ap_pid="{$item.ap_pid}" ap_ppid="{$fitem.ap_pid}"
+                           ap_pcode="{$fitem.ap_code}" value="{$item.ap_code}"
+                           lay-filter="ap_code" {in name="item.ap_code" value="$model['ap_codes']" }checked="checked" {/in}>
+                    {/foreach}
+
+                </div>
+            </td>
+
+            {lt name="fkey" value="$pcount-1"}
+        </tr>
+        {/lt}
+        {/foreach}
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+</div>
+
+<div class="layui-form-item ">
+              <input type="hidden" name="updatetime" value="{:time()}">
+              <button class="layui-btn layui-btn-fluid" type="submit">提交</button>
+            </div>
+
+            <script>
+              $(function() {
+                $(".mainform").Validform({
+                  tiptype: function(msg, o, cssctl) {
+                    //msg：提示信息;
+                    //o:{obj:*,type:*,curform:*}, obj指向的是当前验证的表单元素（或表单对象），type指示提示的状态，值为1、2、3、4， 1：正在检测/提交数据，2：通过验证，3：验证失败，4：提示ignore状态, curform为当前form对象;
+                    //cssctl:内置的提示信息样式控制函数，该函数需传入两个参数：显示提示信息的对象 和 当前提示的状态（既形参o中的type）;
+                    if (!o.obj.is("form")) {
+                      //验证表单元素时o.obj为该表单元素，全部验证通过提交表单时o.obj为该表单对象;
+
+                      var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                      cssctl(objtip, o.type);
+                      objtip.html(msg);
+                    } else {
+                      console.log("o.obj is form");
+                      var objtip = o.obj.find("#msgdemo");
+                      cssctl(objtip, o.type);
+                      objtip.html(msg);
+                    }
+                  },
+                  ajaxPost: true,
+                  callback: function(data) {
+                    console.log(data);
+                    if (data.code == 1) {
+                      layer.alert(data.msg, {
+                        icon: 6
+                      }, function() {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.location.reload();
+                        parent.layer.close(index);
+
+                      });
+                    } else {
+                      msgFaild(data.msg);
+                    }
+                  }
+                });
+
+
+              });
+            </script>
+
+            <script>
+              layui.use(['form', 'layer'], function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                  layer = layui.layer;
+
+                form.on('checkbox(ap_code)', function(data) {
+                  console.log($(data.elem).attr('ap_id'));
+                  var ap_id = $(data.elem).attr('ap_id');
+
+                  console.log($(data.elem).is(":checked"));
+                  var select;
+                  if ($(data.elem).is(":checked")) {
+                    //如果选中
+                    //父级全选中
+                    select = "input[ap_id='" + $(data.elem).attr('ap_pid') + "']";
+                    $(select).prop('checked', true);
+                    //爷爷级全选中
+                    select = "input[ap_id='" + $(data.elem).attr('ap_ppid') + "']";
+                    $(select).prop('checked', true);
+                    //儿子全选中
+                    select = "input[ap_pid='" + $(data.elem).attr('ap_id') + "']";
+                    $(select).prop('checked', true);
+                    //孙子全选中
+                    select = "input[ap_ppid='" + $(data.elem).attr('ap_id') + "']";
+                    $(select).prop('checked', true);
+                  } else {
+                    //儿子全取消
+                    select = "input[ap_pid='" + $(data.elem).attr('ap_id') + "']";
+                    $(select).prop('checked', false);
+                    //孙子全取消
+                    select = "input[ap_ppid='" + $(data.elem).attr('ap_id') + "']";
+                    $(select).prop('checked', false);
+                    //父亲取消
+                    select = "input[ap_pid='" + $(data.elem).attr('ap_pid') + "']:checked";
+                    if ($(select).length == 0) {
+                      $("input[ap_id='" + $(data.elem).attr('ap_pid') + "']").prop('checked', false);
+                    }
+                    select = "input[ap_ppid='" + $(data.elem).attr('ap_ppid') + "']:checked";
+                    //爷爷取消
+                    if ($(select).length == 0) {
+                      $("input[ap_id='" + $(data.elem).attr('ap_ppid') + "']").prop('checked', false);
+                    }
+                  }
+                  // var list = $("input[ap_pcode='" + pcode + "']");
+                  // var pcodeChk = $("input[value='" + pcode + "']");
+                  // pcodeChk.prop('checked', false);
+                  // for (var i = 0; i < list.length; i++) {
+                  //     if ($(list[i]).is(":checked")) {
+                  //         pcodeChk.prop('checked', true);
+                  //     }
+                  // }
+                  form.render('checkbox');
+                });
+
+              });
+            </script>

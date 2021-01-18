@@ -1,0 +1,316 @@
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.10&key=3bd3f3617d221ece4fe8c4f3d2be76a9&plugin=AMap.Scale,AMap.OverView,AMap.ToolBar,AMap.MapType,AMap.PolyEditor"></script>
+<script>
+    var map;
+    var satelliteLayer ;//卫星图层
+    var pointTextArr=[];//点的名称集合
+    var polygonArr=[];
+    function mapInit() {
+        map = new AMap.Map('container', {
+            center: [113.307648,23.389627],
+            zoom: 15,
+            zooms:[14,17]
+        });
+        toolBar = new AMap.ToolBar({
+            visible: true,
+            position:"RB",
+            liteStyle:true,
+            //offset:AMap.Pixel(0,100)
+        });
+        map.addControl(toolBar);
+
+        map.addControl(new AMap.Scale({
+            position: "LB"
+        }));
+        //图层切换控件
+        // map.addControl(new AMap.MapType({
+        //     position:"RB",
+        //     //showTraffic:false,
+        // }));
+        setInitArea();
+        satelliteLayer = new AMap.TileLayer.Satellite();
+    }
+
+    function normalMapInit(){
+        map = new AMap.Map('container', {
+            center: [113.307648,23.389627],
+            zoom: 15,
+            zooms:[14,17]
+        });
+        toolBar = new AMap.ToolBar({
+            visible: true,
+            position:"RB",
+            liteStyle:true,
+            //offset:AMap.Pixel(0,100)
+        });
+        map.addControl(toolBar);
+
+        map.addControl(new AMap.Scale({
+            position: "LB"
+        }));
+        satelliteLayer = new AMap.TileLayer.Satellite();
+        return map;
+    }
+
+    function pointMapInit(){
+        map = new AMap.Map('container', {
+            center: [lng,lat],
+            zoom: 15,
+            zooms:[14,18]
+        });
+        toolBar = new AMap.ToolBar({
+            visible: true,
+            position:"RB",
+            liteStyle:true,
+            //offset:AMap.Pixel(0,100)
+        });
+        map.addControl(toolBar);
+
+        map.addControl(new AMap.Scale({
+            position: "LB"
+        }));
+        satelliteLayer = new AMap.TileLayer.Satellite();
+        return map;
+    }
+
+    function clickMapInit() {
+        map = new AMap.Map('container', {
+            center: [113.307648,23.389627],
+            zoom: 15,
+            zooms:[14,17],
+            dragEnable :  false,
+            doubleClickZoom: false
+        });
+        toolBar = new AMap.ToolBar({
+            visible: true,
+            position:"RB",
+            liteStyle:true,
+            //offset:AMap.Pixel(0,100)
+        });
+        map.addControl(toolBar);
+
+        map.setDefaultCursor("default");
+
+        map.addControl(new AMap.Scale({
+            position: "LB"
+        }));
+        //图层切换控件
+        // map.addControl(new AMap.MapType({
+        //     position:"RB",
+        //     //showTraffic:false,
+        // }));
+        return map;
+
+    }
+
+
+
+    //===============接口方法=====================
+    //改变地图类型，2是2D地图，3是卫星地图
+    function changeMap(type) {
+        console.log(type);
+        if(type==2){
+            $(".d3").show();
+            $(".d2").hide();
+            map.remove(satelliteLayer);
+        }
+        if(type==3){
+            map.add(satelliteLayer);
+            $(".d3").hide();
+            $(".d2").show();
+        }
+    }
+
+    function showHidePointText(type) {
+        pointTextArr.forEach(function(value,index,data){
+           if(type==1){
+               //如果是显示
+               value.show();
+           } else{
+               value.hide();
+           }
+        });
+    }
+    //==============私有方法======================
+    //初始化地图
+    function setInitArea() {
+        drawDefaultArea();
+        drawDoneArea();
+    }
+
+    //画原始区域
+    function drawDefaultArea() {
+        var polygons = new Array();
+        var len = areaList.length;
+        var latMax, lngMax, latLngNum;
+        var latMin, lngMin;
+        latMax = lngMax = latLngNum = 0;
+        latMin = 90;
+        lngMin = 180;
+        for (var i = 0; i < len; i++) {
+            (function (n) {
+
+                var polygon;
+                var path = [];
+                var lnglat = areaList[i].coordinates_gcj02.split(' ');
+                var textLatMin, textLatMax, textLngMin, textLngMax, textNum;
+                textLatMax = textLngMax = textNum = 0;
+                textLatMin = 90;
+                textLngMin = 180;
+                lnglat.forEach(function (value, index, array) {
+                    latlngArr = value.split(",");
+                    latMin = (latlngArr[1] < latMin) ? latlngArr[1] : latMin;
+                    latMax = (latlngArr[1] > latMax) ? latlngArr[1] : latMax;
+                    textLatMin = (latlngArr[1] < textLatMin) ? latlngArr[1] : textLatMin;
+                    textLatMax = (latlngArr[1] > textLatMax) ? latlngArr[1] : textLatMax;
+
+                    lngMin = (latlngArr[0] < lngMin) ? latlngArr[0] : lngMin;
+                    lngMax = (latlngArr[0] > lngMax) ? latlngArr[0] : lngMax;
+                    textLngMin = (latlngArr[0] < textLngMin) ? latlngArr[0] : textLngMin;
+                    textLngMax = (latlngArr[0] > textLngMax) ? latlngArr[0] : textLngMax;
+                    latLngNum++;
+                    textNum++;
+                    path.push( new AMap.LngLat(latlngArr[0],latlngArr[1]));
+                });
+
+
+                var polygon = new AMap.Polygon({
+                    path: path,
+                    fillColor: '#f2f2f2', // 多边形填充颜色
+                    borderWeight: 1, // 线条宽度，默认为 1
+                    strokeColor: 'blue', // 线条颜色
+                    strokeOpacity: 0.2,
+                    fillOpacity: 1,
+                    zIndex:200,
+                });
+                polygonArr.push(polygon);
+                var areaName=areaList[i].area_name;
+                polygon.on("click",function (e) {
+                    // var text = '您在 [ '+e.lnglat.getLng()+','+e.lnglat.getLat()+' ] 的位置点击了marker！';
+                    showRecord(areaName);
+                    // console.log(text);
+                });
+
+                map.add(polygon);
+                //添加文本
+                var textLng=(parseFloat(textLngMax)+parseFloat(textLngMin))/2;
+                var textLat=(parseFloat(textLatMax)+parseFloat(textLatMin))/2;
+                // console.log("textLngMax:"+textLngMax+",textLngMin:"+textLngMin);
+                // console.log("textLatMax:"+textLatMax+",textLatMin:"+textLatMin);
+                // console.log("lat:"+textLat+",lng:"+textLng);
+                var text = new AMap.Text({
+                    text:areaList[i].area_name,
+                    position: [textLng,textLat]
+                });
+                text.on("click",function (e) {
+                    // var text = '您在 [ '+e.lnglat.getLng()+','+e.lnglat.getLat()+' ] 的位置点击了marker！';
+                    showRecord(areaName);
+                    // console.log(text);
+                });
+                pointTextArr.push(text);
+                map.add(text);
+            })(i);
+
+
+        }
+
+    }
+
+    //画已经作业了的区域
+    function drawDoneArea() {
+        var polygons = new Array();
+        var len = workList.length;
+
+        var latMax, lngMax, latLngNum;
+        var latMin, lngMin;
+        latMax = lngMax = latLngNum = 0;
+        latMin = 90;
+        lngMin = 180;
+
+        for (var i = 0; i < len ; i++) {
+            // console.log("循环i:",workList[i]);
+            var count = 1;
+            for (var y = 0; y < len; y++){
+                if(workList[y].maintain_area == workList[i].maintain_area && workList[y].id != workList[i].id){
+                    count += 1;
+                }
+            }
+            // console.log(workList[i].maintain_area+" "+count);
+
+            var color = "";
+            // var result = count / len;
+            if(count < 3){
+                color = "#f2f2f2";
+            }else if(count >= 3 && count < 6){
+                color = "#f2e1c3";
+            }else if(count >= 6 && count < 9){
+                color = "#f0d6c7";
+            }else if(count >= 9 && count < 12){
+                color = "#fef391";
+            }else if(count >= 12 && count < 15){
+                color = "#ffeb3c";
+            }else if(count >= 15 && count < 18){
+                color = "#f3dc15";
+            }else if(count >= 18 && count < 21){
+                color = "#ffd507";
+            }else if(count >= 21 && count < 24){
+                color = "#f5b65a";
+            }else if(count >= 24 && count < 27){
+                color = "#ff9801";
+            }else if(count >= 27 && count < 30){
+                color = "#ff5821";
+            }else if(count >= 30 && count < 33){
+                color = "#e70500";
+            }else if(count >= 33 && count < 36){
+                color = "#d12324";
+            }else if(count >= 36 && count < 39){
+                color = "#8e1f01";
+            }else{
+                color = "#5e0000";
+            }
+            console.log(workList[i].maintain_area,':',count);
+            var polygon;
+            var path = [];
+            if(!workList[i].coordinates_gcj02){
+                continue;
+            }
+            // var lnglat = workList[i].coordinates_gcj02.split(' ');
+            var lnglat = workList[i].coordinates_gcj02.split(' ');
+            var textLatMin, textLatMax, textLngMin, textLngMax, textNum;
+            textLatMax = textLngMax = textNum = 0;
+            textLatMin = 90;
+            textLngMin = 180;
+            lnglat.forEach(function (value, index, array) {
+                latlngArr = value.split(",");
+                latMin = (latlngArr[1] < latMin) ? latlngArr[1] : latMin;
+                latMax = (latlngArr[1] > latMax) ? latlngArr[1] : latMax;
+                textLatMin = (latlngArr[1] < textLatMin) ? latlngArr[1] : textLatMin;
+                textLatMax = (latlngArr[1] > textLatMax) ? latlngArr[1] : textLatMax;
+
+                lngMin = (latlngArr[0] < lngMin) ? latlngArr[0] : lngMin;
+                lngMax = (latlngArr[0] > lngMax) ? latlngArr[0] : lngMax;
+                textLngMin = (latlngArr[0] < textLngMin) ? latlngArr[0] : textLngMin;
+                textLngMax = (latlngArr[0] > textLngMax) ? latlngArr[0] : textLngMax;
+                latLngNum++;
+                textNum++;
+                path.push( new AMap.LngLat(latlngArr[0],latlngArr[1]));
+            });
+
+
+            var polygon = new AMap.Polygon({
+                path: path,
+                fillColor: color, // 多边形填充颜色
+                borderWeight: 0, // 线条宽度，默认为 1
+                strokeColor: 'red', // 线条颜色
+                strokeOpacity: 0.2,
+                fillOpacity: 1,
+                zIndex: 300,
+            });
+
+            map.add(polygon);
+
+
+        }
+
+    }
+</script>

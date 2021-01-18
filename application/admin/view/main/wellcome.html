@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="public/header" /}
+</head>
+<body>
+<div class="x-body layui-anim layui-anim-up">
+    <blockquote class="layui-elem-quote">欢迎使用本系统。
+        <span class="x-red"></span>当前时间：<span id="nowTime">{:date('Y-m-d H:i')}</span>
+        <a class="layui-btn layui-btn-small ml20" style=""
+           href="javascript:location.replace(location.href);" title="刷新">
+           刷新</a>
+    </blockquote>
+
+    <div class="data_content layui-row">
+        <div class="content_row clearfix">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">台账记录数：</div>
+                    <div class="layui-card-body">
+                        <div class="content_list">
+                            {foreach name="recordDataList" item="item"}
+                            <div class="layui-card" style="margin-right: 30px;margin-bottom: 15px;">
+                                <div class="layui-card-body">
+                                    <div class="tc">本月：{$item.monthCount}</div>
+                                    <div class="tc">本年：{$item.yearCount}</div>
+                                    <div class="tc">累计：{$item.totalCount}</div>
+                                </div>
+                                <div class="layui-card-header">{$item.type}</div>
+                            </div>
+                            {/foreach}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md5 fr" style="width:48%;">
+                <div class="layui-card">
+                    <div class="layui-card-header clearfix">
+                        <div class="fl">工作计划表：</div>
+                        <div class="fr">
+                            <a _href="{:url('Schedule/index')}" tab-id="66" class="link">
+                                更多
+                                <cite style="display: none;">工作计划表</cite>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+                        <table class="layui-table" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th>事件</th>
+                                <th>计划处理时间</th>
+                                <th>是否完成</th>
+                                <th>备注</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach name="scheduleList" item="item"}
+                            <tr id="{$item.id}" data-value="{$item.index}">
+                                <td style="width:200px;">{$item.event}</td>
+                                <td style="width:90px;">{$item.deal_time}</td>
+                                <td style="width:60px;">
+                                    {eq name="item.is_complete" value="1"}
+                                    已完成
+                                    {else/}
+                                    未完成
+                                    {/eq}
+                                </td>
+                                <td style="width:140px;">{$item.remarks}</td>
+                                <td style="display: none;" id="index">{$item.index}</td>
+                                <td style="display: none;" id="id">{$item.id}</td>
+                                <td class="td-manage">
+                                    =
+                                </td>
+                            </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="content_row clearfix">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">台账记录统计：</div>
+                    <div class="layui-card-body">
+                        <div id="charts" style="width: 100%;height:400px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md5 fr" style="width:48%;">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <div class="layui-card-header clearfix">
+                            <div class="fl">文件通知：</div>
+                            <div class="fr">
+                                <a _href="{:url('Article/index')}" tab-id="68" class="link">
+                                    更多
+                                    <cite style="display: none;">文件通知</cite>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+                        <table class="layui-table">
+                            <thead>
+                                <tr>
+                                    <th>通知</th>
+                                    <th>发布时间</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach name="articleList" item="item"}
+                                <tr>
+                                    <td style="width:300px;">{$item.title}</td>
+                                    <td style="width:90px;">{$item.addtime}</td>
+                                    <td style="width:50px;">
+                                        {eq name="item.status" value="1"}
+                                        已读
+                                        {else/}
+                                        未读
+                                        {/eq}
+                                    </td>
+                                </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="__STATIC__/js/echarts.min.js"></script>
+
+    </div>
+
+    <script>
+        function showLeftTime()  {
+            var now=new Date();
+            var year=now.getFullYear();
+            var month=now.getMonth()+1;
+            if(month<10){
+                month='0'+month;
+            }
+            var day=now.getDate();
+            if(day<10){
+                day='0'+day;
+            }
+            var hours=now.getHours();
+            if(hours<10){
+                hours='0'+hours;
+            }
+            var minutes=now.getMinutes();
+            if(minutes<10){
+                minutes='0'+minutes;
+            }
+            var seconds=now.getSeconds();
+            if(seconds<10){
+                seconds='0'+seconds;
+            }
+            var showTime=year+"年"+month+"月"+day+"日 "+hours+":"+minutes+":"+seconds+"";
+            $('#nowTime').html(showTime);
+//一秒刷新一次显示时间
+            var timeID=setTimeout(showLeftTime,1000);
+        }
+        $(function () {
+            showLeftTime();
+            initChart();
+
+            var indexList = [];
+            var list = $('#dataTable tr');
+            list.each(function(i){
+                var index = $(this).attr('data-value');
+                if(index){
+                    indexList.push(index);
+                }
+            })
+            // console.log(indexList);
+            var minIndex = getMinIndex(indexList);
+            // console.log(minIndex);
+            initTableDnD(minIndex + 9, minIndex);
+            // parent.tabAdd('haha', "{:url('Article/index')}", 999);
+
+            $('.link').click(function (event) {
+                var url = $(this).attr('_href');
+                var id = $(this).attr('tab-id');
+                var title = $(this).find('cite').html();
+
+                parent.tabAdd(title,url,id);
+                parent.tabChange(id);
+                event.stopPropagation();
+            })
+        });
+
+
+
+        function getMinIndex(list){
+            let min = list[0];
+            for(let i=1; i<list.length; i++){
+                if(Number(min) > Number(list[i])){
+                    min = list[i];
+                }
+            }
+            return Number(min);
+        }
+
+        function initChart(){
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('charts'));
+
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: ''
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: {$labelList}
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: {$dayList}
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: {$dataList}
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        }
+
+        function initTableDnD(maxIndex, minIndex){
+
+          $("#dataTable").tableDnD({
+            //滚动的速度
+            scrollAmount:5,
+            onDragClass:'highlight',
+            //当拖动排序完成后
+            onDrop: function(table,row) {
+              // console.log('ondrop',table);
+              // console.log('ondrop',row);
+                var newIndexList = [];
+                var startIndex = maxIndex;
+              var list = $('#dataTable tr');
+              list.each(function(i){
+                  var item = list[i];
+                  var id = $(this).attr('id');
+                  var index = $(this).attr('data-value');
+                  if(id && index){
+                      var data = {};
+                      data.id = id;
+                      data.index = index;
+                      newIndexList.push(data);
+                  }
+              })
+
+              for(let i=0; i<newIndexList.length; i++){
+                  newIndexList[i].index = startIndex;
+                  startIndex--;
+              }
+                loading = layer.load(1);
+              sendDataToUpdate(newIndexList);
+            },
+            onDragStart:function(table,row){
+            },
+          });
+        }
+
+        function sendDataToUpdate(indexList){
+            var data = {};
+            data.list = JSON.stringify(indexList);
+            $.post('{:url("Schedule/changeData")}', data, function(data) {
+                layer.close(loading);
+                if(data.code == 1){
+                    // console.log(data);
+                    layer.msg(data.msg, { icon: 1, time: 1000 });
+                    setTimeout( function(){ window.location.reload(); }, 1000);
+                }
+                else{
+                    msgFaild(data.msg);
+                }
+            }, 'json');
+        }
+
+    </script>
+
+
+
+</div>
+
+</body>
+</html>
+
+<style>
+    .content_title{font-size: 18px;font-weight: 600; margin-bottom: 15px;padding-left: 15px;}
+    .main_content{padding: 15px 30px;border: 1px solid #cccccc;}
+    .content_list{display: flex;flex-wrap: wrap;}
+    .content_item{text-align: center;margin: 15px;width:20%;}
+    .type_name{margin-top: 10px;font-weight: 550;}
+    .layui-table td{padding: 11px 15px;}
+    .content_row{margin-bottom: 25px;}
+    .myDragClass{background-color: rgba(0, 0, 0, 0.1);}
+    .data_content{background-color: #f2f2f2;padding: 10px;}
+
+    .link{color:#1E9FFF;cursor: pointer}
+</style>

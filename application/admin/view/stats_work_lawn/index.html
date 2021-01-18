@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('StatsWorkLawn/index')}">
+        <input class="layui-input" placeholder="请选择年份" name="year" id="year" value="{$year}">
+        <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <a class="layui-btn layui-btn-normal" href="{:url('StatsWorkLawn/index',['act'=>'export_excel', 'year'=>$year])}">
+          <i class="layui-icon">&#xe60a;</i>导出excel
+      </a>
+    </xblock>
+    <table class="layui-table text-center">
+      <thead>
+        <tr>
+          <th style="text-align:center;">月份</th>
+          {foreach name="work_type" item="item"}
+            <th style="text-align:center;">{$item.value}</th>
+          {/foreach}
+        </tr>
+      </thead>
+      <tbody>
+        {foreach name="list" item="item"}
+          <tr>
+            <td>{$item.month}</td>
+            {foreach name="work_type" item="type"}
+              <td>{$item[$type['id'].'_'.$type['index_code']]}</td>
+            {/foreach}
+          </tr>
+        {/foreach}
+      </tbody>
+    </table>
+  </div>
+</body>
+<script>
+  layui.use('laydate', function() {
+    var laydate = layui.laydate;
+    laydate.render({ elem: '#year' , type: 'year' });
+  });
+</script>
+
+</html>

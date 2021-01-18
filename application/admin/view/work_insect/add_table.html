@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    {include file="public/header" /}
+  </head>
+
+  <body style="background-color:#f2f2f2;">
+    <div class="x-body">
+      <div class="layui-row">
+        <div class="layui-col-lg5 layui-col-md5">
+          <form class="layui-form mainform" method="post">
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">
+                <span class="x-red">*</span>消杀区域
+              </label>
+              <div class="layui-input-inline">
+                <select name="maintain_area" id="maintain_area" datatype="*" lay-search="lay-search">
+                  <option value="">无</option>
+                  {foreach name="area_list" item="item"}
+                  <option value="{$item['key']}" {eq name="model.maintain_area" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+                  {/foreach}
+                </select>
+              </div>
+              <!--<div class="layui-form-mid layui-word-aux w100">-->
+                <!--<span class="Validform_checktip">请选择消杀区域</span>-->
+              <!--</div>-->
+              <div class="layui-form-mid layui-word-aux w100">
+                <a style="color:#1E9FFF;cursor: pointer" onclick="x_admin_show('添加工作区域','{:url('WorkArea/add')}')">新增消杀区域</a>
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">
+                <span class="x-red">*</span>飞行区方位
+              </label>
+              <div class="layui-input-inline">
+                <select name="flight_area" id="flight_area" datatype="*" lay-search="lay-search">
+                  <option value="">无</option>
+                  {foreach name="work_insect_flight_list" item="item"}
+                  <option value="{$item['key']}" {eq name="model.flight_area" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+                  {/foreach}
+                </select>
+              </div>
+              <div class="layui-form-mid layui-word-aux w100">
+                <span class="Validform_checktip">请选择飞行区方位</span>
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">
+                <span class="x-red">*</span>消杀面积
+              </label>
+              <div class="layui-input-inline">
+                <input type="text" value="{$model.work_area}" name="work_area" id="work_area" datatype="*" autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux w110">
+                <span class="Validform_checktip ">请填写消杀面积</span>
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">
+                <span class="x-red">*</span>面积单位
+              </label>
+              <div class="layui-input-inline">
+                <select name="area_unit" id="area_unit" datatype="*" lay-search="lay-search">
+                  {foreach name="work_insect_unit_list" item="item"}
+                  <option value="{$item['value']}" {eq name="model.area_unit" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+                  {/foreach}
+                </select>
+              </div>
+              <div class="layui-form-mid layui-word-aux w110">
+                <span class="Validform_checktip ">请选择面积单位</span>
+              </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+              <label class="layui-form-label">备注</label>
+              <div class="layui-input-inline w300">
+                <textarea id="remarks" name="remarks" placeholder="请输入备注" class="layui-textarea h100">{$model.remarks}</textarea>
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label"></label>
+              <button class="layui-btn" type="submit" id="transmit">
+                提交
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+
+<script>
+  $('#transmit').on('click', function () {
+    var data = {};
+    data['maintain_area'] = $('#maintain_area option:selected').val();
+    data['flight_area']   = $('#flight_area option:selected').val();
+    data['work_area']     = $('#work_area').val();
+    data['area_unit']     = $('#area_unit option:selected').val();
+    switch(parseInt(data['area_unit'])){
+      case 0:
+        data['unit_str'] = '平方米';
+        break;
+      case 1:
+        data['unit_str'] = '立方米';
+        break;
+      case 2:
+        data['unit_str'] = '米';
+        break;
+      default:
+        data['unit_str'] = '平方米';
+        break;
+    }
+    data['remarks']       = $('#remarks').val();
+
+
+    if(!data['maintain_area'] || data['maintain_area'] == ''){
+      layer.msg("消杀区域不能为空");
+      return false;
+    }else if(!data['flight_area'] || data['flight_area'] == ''){
+      layer.msg("飞行区方位不能为空");
+      return false;
+    }else if(!data['work_area'] || data['work_area'] == ''){
+      layer.msg("消杀面积不能为空");
+      return false;
+    }else if(!data['area_unit'] || data['area_unit'] == ''){
+      layer.msg("面积单位不能为空");
+      return false;
+    }else{
+      window.parent.addData(data);
+      var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+      parent.layer.close(index);
+    }
+
+
+  });
+</script>
+
+</html>

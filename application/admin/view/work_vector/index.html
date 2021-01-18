@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('WorkVector/index')}">
+        <!--<input class="layui-input" placeholder="开始日" name="starting_time" id="starting_time" value="{$starting_time}">
+        <input class="layui-input" placeholder="截止日" name="end_time" id="end_time" value="{$end_time}">
+        <input type="text" name="keyword" placeholder="请输入工作区域" autocomplete="off" class="layui-input" value="{$keyword}">-->
+        日期范围：
+        <div class="layui-input-inline">
+          <input class="layui-input" style="width:180px;" placeholder="请选择时间范围" name="day" id="dayRange" value="{$day}" autocomplete="off">
+
+        </div>
+        &nbsp;
+        工作类型：
+        <div class="layui-input-inline">
+          <select name="work_type" class="w80" lay-search>
+            <option value="">全部</option>
+            {foreach name="work_vector_type_list" item="item"}
+            <option value="{$item.key}" {eq name="item.key" value="$work_type" }selected{/eq}>{$item.key}</option>
+            {/foreach}
+
+          </select>
+        </div>
+
+        &nbsp;维护区域：
+        <div class="layui-input-inline">
+          <select name="work_area" class="w80" lay-search>
+            <option value="">全部</option>
+            {foreach name="area_list" item="item"}
+            <option value="{$item.key}" {eq name="item.key" value="$work_area" }selected{/eq}>{$item.key}</option>
+            {/foreach}
+
+          </select>
+        </div>
+        &nbsp;
+        飞行区方位：
+        <div class="layui-input-inline">
+          <select name="work_flight" class="w80" lay-search>
+            <option value="">全部</option>
+            {foreach name="work_vector_flight_list" item="item"}
+            <option value="{$item.key}" {eq name="item.key" value="$work_flight" }selected{/eq}>{$item.key}</option>
+            {/foreach}
+
+          </select>
+        </div>
+        &nbsp;
+        服务商负责人：
+        <div class="layui-input-inline">
+          <select name="service_provider" datatype="*" id="service_provider" lay-search>
+            <option value="">无</option>
+            {foreach name="work_vector_service_list" item="item"}
+            <option value="{$item.key}" {eq name="$service_provider" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+            {/foreach}
+          </select>
+        </div>
+        &nbsp;
+        防治对象：
+        <div class="layui-input-inline">
+          <select name="control_object" id="control_object" datatype="*" lay-search>
+            <option value="">无</option>
+            {foreach name="work_vector_object_list" item="item"}
+            <option value="{$item.key}" {eq name="$control_object" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+            {/foreach}
+          </select>
+        </div>
+        &nbsp;
+        录入人员：
+        <div class="layui-input-inline">
+          <select name="aid" datatype="*" id="aid" lay-search>
+            <option value="">无</option>
+            {foreach name="entering_list" item="item"}
+            <option value="{$item.key}" {eq name="$aid" value="$item['key']" } selected="selected" {/eq}>{$item.value}</option>
+            {/foreach}
+          </select>
+        </div>
+        <button class="layui-btn" style="margin-bottom: 15px;" type="submit"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <button class="layui-btn layui-btn-danger" onclick="delMuti()">
+        <i class="layui-icon"></i>批量删除
+      </button>
+      <button class="layui-btn" onclick="x_admin_show('添加病媒防控工作记录','{:url('WorkVector/add')}')">
+        <i class="layui-icon"></i>添加
+      </button>
+      <a class="layui-btn layui-btn-normal" href="{:url('WorkVector/index',['act'=>'export_excel','begin_day'=>$begin_day,'end_day'=>$end_day,'work_area'=>$work_area,'work_flight'=>$work_flight,'work_type'=>$work_type])}">
+        <i class="layui-icon">&#xe60a;</i>导出excel
+      </a>
+      <span class="x-right" style="line-height:40px">共有数据：{$totalRows} 条</span>
+    </xblock>
+
+    <table class="layui-hide" id="dataTable" lay-filter="list_table_event"></table>
+
+    <script type="text/html" id="table-operation-list">
+      <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">
+        <i class="layui-icon layui-icon-edit"></i>编辑
+      </a>
+      <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="detail">
+        <i class="layui-icon layui-icon-edit"></i>详情
+      </a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+        <i class="layui-icon layui-icon-delete"></i>删除
+      </a>
+    </script>
+
+    <!--下拉选择框选项-->
+    <script type="text/html" id="table-work-list">
+      {{# if({$hasPower} > 0){}}
+      <select name="work_area1" class="work_area" id="work_area" datatype="*" lay-search lay-filter="work_area1" data-value="{{d.maintain_area}}">
+        {foreach name="area_list" item="item"}
+        <option value="{$item.key}">{$item.key}</option>
+        {/foreach}
+      </select>
+      {{# }else {}}
+      <span>{{d.maintain_area}}</span>
+      {{# }}}
+    </script>
+
+    <script type="text/html" id="table-flight-list">
+      {{# if({$hasPower} > 0){}}
+      <select name="work_flight1" class="work_flight" id="work_flight" datatype="*" lay-search lay-filter="work_flight1" data-value="{{d.flight_area}}">
+        {foreach name="work_vector_flight_list" item="item"}
+        <option value="{$item.key}">{$item.key}</option>
+        {/foreach}
+      </select>
+      {{# }else {}}
+      <span>{{d.flight_area}}</span>
+      {{# }}}
+    </script>
+
+    <script type="text/html" id="table-type-list">
+      {{# if({$hasPower} > 0){}}
+      <select name="work_type1" class="work_type" id="work_type" datatype="*" lay-search lay-filter="work_type1" data-value="{{d.work_type}}">
+        {foreach name="work_vector_type_list" item="item"}
+        <option value="{$item.key}">{$item.key}</option>
+        {/foreach}
+      </select>
+      {{# }else {}}
+      <span>{{d.work_type}}</span>
+      {{# }}}
+    </script>
+
+    <script type="text/html" id="table-object-list">
+      {{# if({$hasPower} > 0){}}
+      <select name="work_object" class="work_object" id="work_object" datatype="*" lay-search lay-filter="work_object" data-value="{{d.control_object}}">
+        {foreach name="work_vector_object_list" item="item"}
+        <option value="{$item.key}">{$item.key}</option>
+        {/foreach}
+      </select>
+      {{# }else {}}
+      <span>{{d.control_object}}</span>
+      {{# }}}
+    </script>
+
+
+  </div>
+</body>
+
+<script>
+  var startDate1 = new Date(new Date().setDate(1));
+  //定义接收上个月的第一天和最后一天
+  var startDate2 = new Date(new Date(new Date().setMonth(new Date().getMonth() - 1)).setDate(1));
+  var endDate2 = new Date(new Date().setDate(0));
+
+  //本年1月1号
+  var startYearDate = new Date(new Date(new Date().setDate(1)).setMonth(0));
+  //去年1月1号
+  var startYearDate2 = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(1)).setMonth(0));
+  //去年年底
+  var endYearDate = new Date(new Date(new Date(new Date().setFullYear(new Date().getFullYear() - 1)).setDate(0)).setMonth(11));
+
+  var now = new Date(); //当前日期
+  var nowDayOfWeek = now.getDay(); //今天本周的第几天
+
+  var loding;
+  var allRowData = [];
+
+  layui.use('table', function(){
+    var table = layui.table;
+
+    table.render({
+      elem: '#dataTable'
+      ,url:'{$dataUrl}'
+      ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+      ,totalRow: true
+      ,cols: [[
+        {type:'checkbox'}
+        ,{field:'id', width:80, title: '编号',totalRowText:'合计：'}
+        ,{field:'date', title: '日期', event: 'setDateTime', edit: 'text',data_field:'date'}
+        ,{field:'work_type', title: '工作类型', toolbar: '#table-type-list'}
+        ,{field:'control_object', title: '防治对象', toolbar: '#table-object-list'}
+        ,{field:'maintain_area', title: '工作区域', toolbar: '#table-work-list'}
+        ,{field:'flight_area', title: '飞行区方位', toolbar: '#table-flight-list'}
+        ,{
+          title: '操作',
+          width: 200,
+          toolbar: '#table-operation-list',
+          fixed: 'right'
+        }
+      ]]
+      ,page: true
+      ,done: function(res, curr, count){
+        let tableView = this.elem.next();
+        layui.each(res.data, function(i, item){
+          var a = tableView.find('td');
+          if({$hasPower} == 0){
+            tableView.find('td').data('edit', false);
+          }
+        })
+        res.data.forEach(function(item, index){
+          setSelectValue();
+        });
+        table.render('select');
+        allRowData = table.cache["dataTable"];
+        // console.log('data', JSON.stringify(allRowData));
+      }
+    });
+
+    //监听行工具事件
+    table.on('tool(list_table_event)', function (obj) {
+      var data = obj.data;
+      switch (obj.event) {
+        case "edit":
+          var url = '{:url("WorkVector/edit")}';
+          url += '?id=' + data.id;
+          open_with_full_screen('编辑病媒防治工作记录',url);
+          break;
+        case "detail":
+          var url = '{:url("WorkVector/detail")}';
+          url += '?id=' + data.id;
+          open_with_full_screen('病媒防治工作记录详情',url);
+          break;
+        case "del":
+          member_del(obj.data,obj.data.id);
+          break;
+        case "setDateTime":
+          console.log('obj', obj);
+          if({$hasPower} > 0){
+            var field = $(this).data('field');
+            var laydate = layui.laydate;
+            laydate.render({
+              elem: this.firstChild
+              , show: true //直接显示
+              , closeStop: this
+              ,type:'date'
+              , done: function (value, date) {
+                data[field] = value;
+                // obj.update(data);
+                loading = layer.load(1);
+                sendDataToChange(data);
+              }
+            });
+          }
+          break;
+        default:
+      }
+    });
+  });
+
+  function setSelectValue(){
+    layui.each($("select[name='work_area1']", ""),function(index, item){
+      var elem = $(item);
+      elem.next().children().children()[0].defaultValue = elem.data('value');
+    })
+
+    layui.each($("select[name='work_flight1']", ""),function(index, item){
+      var elem = $(item);
+      elem.next().children().children()[0].defaultValue = elem.data('value');
+    })
+
+    layui.each($("select[name='work_type1']", ""),function(index, item){
+      var elem = $(item);
+      elem.next().children().children()[0].defaultValue = elem.data('value');
+    })
+
+    layui.each($("select[name='work_object']", ""),function(index, item){
+      var elem = $(item);
+      elem.next().children().children()[0].defaultValue = elem.data('value');
+    })
+  }
+
+  layui.use('form', function(){
+    var form = layui.form;
+    form.on('select(work_area1)', function(data){
+      //获取当前行tr对象
+      var elem = data.othis.parents('tr');
+      //第一列的值是Guid，取guid来判断
+      var dataId = elem.first().find('td').eq(1).text();
+      //选择的select对象值；
+      var selectValue = data.value;
+      var rowData;
+      for(let i=0; i<allRowData.length; i++){
+        if(allRowData[i].id == dataId){
+          rowData = allRowData[i];
+        }
+      }
+      rowData.maintain_area = selectValue;
+      loading = layer.load(1);
+      sendDataToChange(rowData);
+    })
+
+    form.on('select(work_flight1)', function(data){
+      //获取当前行tr对象
+      var elem = data.othis.parents('tr');
+      //第一列的值是Guid，取guid来判断
+      var dataId = elem.first().find('td').eq(1).text();
+      //选择的select对象值；
+      var selectValue = data.value;
+      var rowData;
+      for(let i=0; i<allRowData.length; i++){
+        if(allRowData[i].id == dataId){
+          rowData = allRowData[i];
+        }
+      }
+      rowData.flight_area = selectValue;
+      loading = layer.load(1);
+      sendDataToChange(rowData);
+    })
+
+    form.on('select(work_type1)', function(data){
+      //获取当前行tr对象
+      var elem = data.othis.parents('tr');
+      //第一列的值是Guid，取guid来判断
+      var dataId = elem.first().find('td').eq(1).text();
+      //选择的select对象值；
+      var selectValue = data.value;
+      var rowData;
+      for(let i=0; i<allRowData.length; i++){
+        if(allRowData[i].id == dataId){
+          rowData = allRowData[i];
+        }
+      }
+      rowData.work_type = selectValue;
+      loading = layer.load(1);
+      sendDataToChange(rowData);
+    })
+
+    form.on('select(work_object)', function(data){
+      //获取当前行tr对象
+      var elem = data.othis.parents('tr');
+      //第一列的值是Guid，取guid来判断
+      var dataId = elem.first().find('td').eq(1).text();
+      //选择的select对象值；
+      var selectValue = data.value;
+      var rowData;
+      for(let i=0; i<allRowData.length; i++){
+        if(allRowData[i].id == dataId){
+          rowData = allRowData[i];
+        }
+      }
+      rowData.control_object = selectValue;
+      loading = layer.load(1);
+      sendDataToChange(rowData);
+    })
+  })
+
+  function sendDataToChange(data){
+    $.post('{:url("WorkVector/changeData")}', data, function(data) {
+      layer.close(loading);
+      if(data.code == 1){
+        layer.msg(data.msg, { icon: 1, time: 1000 });
+        setTimeout( function(){ window.location.reload(); }, 1000);
+      }
+      else{
+        msgFaild(data.msg);
+      }
+    }, 'json');
+  }
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+      laydate.render({
+        elem: '#dayRange' //指定元素
+        , max: '{$today}'
+        , range: '~'
+        , extrabtns: [
+          {
+            id: 'week',
+            text: '本周',
+            range: [new Date(new Date().setDate(new Date().getDate() - nowDayOfWeek + 1)), new Date()]
+          },
+          {
+            id: 'lastday-7',
+            text: '过去7天',
+            range: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date(new Date().setDate(new Date().getDate() - 1))]
+          },
+          {id: 'thismonth', text: '本月', range: [startDate1, now]},
+          {id: 'lastmonth', text: '上个月', range: [startDate2, endDate2]},
+          {id: 'thisyear', text: '本年', range: [startYearDate, now]},
+          {id: 'lastyear', text: '上一年', range: [startYearDate2, endYearDate]}
+        ],
+      });
+
+        //执行一个laydate实例
+        // laydate.render({
+        //     elem: '#end_day' //指定元素
+        //     , max: '{$today}'
+        // });
+    });
+
+  /*用户-删除*/
+  function member_del(obj, id) {
+    layer.confirm('确认要删除吗？', function(index) {
+      $.post('{:url("WorkVector/doDel")}', { 'ids': id }, function(data) {
+        if(data.code == 1){
+          layer.msg(data.msg, { icon: 1, time: 1000 });
+          setTimeout( function(){ window.location.reload(); }, 1000);
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+
+  function delMuti() {
+    var checkStatus = layui.table.checkStatus('dataTable')
+            , data = checkStatus.data;
+    console.log(checkStatus);
+    var len = data.length;
+    if (len == 0) {
+      msgFaild("请先选择要删除的记录");
+      return;
+    }
+    var dot = "";
+    var query = new Object();
+    query.ids = "";
+    for (var i = 0; i < len; i++) {
+      query.ids += dot + data[i].id;
+      dot = ",";
+    }
+    layer.confirm('确定要删除选中记录吗？', {
+      btn: ['确定', '取消']
+    }, function (index, layero) {
+      var url = "{:url('WorkVector/doDel')}";
+      loading("处理中...");
+      layui.$.post(url, query, function (res) {
+        closeAll();
+        if (res.code == 1) {
+          layer.msg(data.msg, { icon: 1, time: 1000 });
+          setTimeout( function(){ window.location.reload(); }, 1000);
+        } else {
+          msgFaild(res.msg);
+        }
+      }, "json");
+    }, function (index) {
+      //处理取消操作
+    });
+
+  }
+
+  function delAll(argument) {
+    var data = tableCheck.getData();
+    layer.confirm('确认要删除吗？' + data, function(index) {
+      $.post('{:url("WorkVector/doDel")}', { 'ids': data.join(",") }, function(data) {
+        if(data.code == 1){
+          layer.msg('删除成功', { icon: 1 });
+          setTimeout( function(){ window.location.reload(); }, 1000);
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+</script>
+
+<style>
+  .layui-table-cell {
+    overflow: visible;
+  }
+
+  .layui-table-box {
+    overflow: visible;
+  }
+
+  .layui-table-body {
+    overflow: visible;
+  }
+  /* 设置下拉框的高度与表格单元相同 */
+  td .layui-form-select{
+    margin-top: -10px;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
+  .layui-input-inline{
+    margin-bottom: 15px;
+  }
+</style>
+
+</html>

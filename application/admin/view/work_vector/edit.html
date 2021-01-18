@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+    {include file="public/label_css" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+  <div class="x-body">
+      <div class="layui-row mt5">
+
+          <div class="layui-col-lg3 layui-col-md3">
+            {include file="work_vector/record" /}
+          </div>
+
+          <div class="layui-col-lg9 layui-col-md9">
+              <form class="layui-form mainform" method="post" action="{:url('WorkVector/doEdit')}">
+                  <input type="hidden" name="id" value="{$model.id}">
+                  {include file="form/work_vector" /}
+              </form>
+          </div>
+
+      </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+
+  <div class="x-body">
+
+
+    <xblock>
+
+      <div style="display: inline-block;width: 300px; height: 40px;line-height: 40px">&nbsp;
+        时间范围：{$begin_day} 至 {$end_day}</div>
+      <span class="x-right" style="line-height:40px">共有数据：{$totalRows} 条</span>
+    </xblock>
+    <table class="layui-table">
+      <thead>
+        <tr>
+
+          <th>编号</th>
+          <th>日期</th>
+          <th>时段</th>
+          <th>喷药次数</th>
+          <th>消杀区域</th>
+          <th>飞行区方位</th>
+          <th>消杀面积</th>
+          <th>详情</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {foreach name="list" item="item"}
+        <tr>
+
+          <td>{$item.id}</td>
+          <td>{:date("Y/n/j", $item.working_date)}</td>
+          <td>{$item.time_period}</td>
+          <td>{$item.spary_times}</td>
+          <td>{$item.maintain_area}</td>
+          <td>{$item.flight_area}</td>
+          <td>{$item.work_area}</td>
+          <td>
+            <a title="详情" onclick="x_admin_show('详情','{:url('StaticWorkInsectRecord/detail',['spary_times'=>$item['spary_times'],'working_date'=>$item['working_date']])}')" href="javascript:;" class="layui-btn layui-btn-xs">
+                    <i class="layui-icon">&#xe63c;</i> 详情
+                </a>
+          </td>
+
+        </tr>
+        {/foreach}
+      </tbody>
+    </table>
+
+    <div class="page">
+      {$page}
+    </div>
+
+  </div>
+</body>
+<script>
+  layui.use('laydate', function() {
+    var laydate = layui.laydate;
+    laydate.render({
+      elem: '#starting_time'
+    });
+    laydate.render({
+      elem: '#end_time'
+    });
+  });
+
+  /*用户-删除*/
+  function member_del(obj, id) {
+    layer.confirm('确认要删除吗？', function(index) {
+      $.post('{:url("WorkInsect/doDel")}', {
+        'ids': id
+      }, function(data) {
+        if (data.code == 1) {
+          //发异步删除数据
+          $(obj).parents("tr").remove();
+          layer.msg(data.msg, {
+            icon: 1,
+            time: 1000
+          });
+        } else {
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+
+  function delAll(argument) {
+    var data = tableCheck.getData();
+    layer.confirm('确认要删除吗？' + data, function(index) {
+      $.post('{:url("WorkInsect/doDel")}', {
+        'ids': data.join(",")
+      }, function(data) {
+        if (data.code == 1) {
+          //捉到所有被选中的，发异步进行删除
+          layer.msg('删除成功', {
+            icon: 1
+          });
+          $(".layui-form-checked").not('.header').parents('tr').remove();
+        } else {
+          msgFaild(data.msg);
+        }
+      }, 'json');
+    });
+  }
+</script>
+
+</html>

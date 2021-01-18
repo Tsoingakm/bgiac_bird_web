@@ -1,0 +1,197 @@
+<div class="layui-form-item">
+    <label for="phone" class="layui-form-label">
+        <span class="x-red">*</span>配置代码
+    </label>
+    <div class="layui-input-inline">
+        {eq name="isEdit" value="1"}
+        <input type="text" value="{$model.index_code}" id="index_code" name="index_code"
+               autocomplete="off" class="layui-input " disabled>
+        {else/}
+        <input type="text" value="{$model.index_code}" id="index_code" name="index_code"
+               autocomplete="off" class="layui-input " datatype="*" ajaxurl="{:url('SysBirdConditon/checkCode')}">
+        {/eq}
+
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+        <span class="x-red">*</span>
+        <span class="Validform_checktip ">输入配置代码，不能与之前的代码重复</span>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label for="phone" class="layui-form-label">
+        <span class="x-red">*</span>配置名
+    </label>
+    <div class="layui-input-inline">
+        <input type="text" value="{$model.column_name}" id="column_name" name="column_name"
+               autocomplete="off" class="layui-input " datatype="*" />
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+        <span class="x-red">*</span>
+        <span class="Validform_checktip ">配置名</span>
+    </div>
+</div>
+
+<div class="layui-form-item">
+  <label for="L_email" class="layui-form-label">
+    <span class="x-red">*</span>对应字段
+  </label>
+  <div class="layui-input-inline">
+    {eq name="is_extra" value="1"}
+      <select name="column_code" lay-search datatype="*" {eq name="isEdit" value="1"} disabled {/eq} >
+        <option value="">无</option>
+        {foreach name="extra_field_list" item="item"}
+        <option value="{$item['value']}" {eq name="model.column_code" value="$item['value']"} selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+      </select>
+    {else/}
+      <input type="text" value="{$model.column_code}" class="layui-input" disabled />
+    {/eq}
+  </div>
+  <div class="layui-form-mid layui-word-aux">
+    <span class="x-red">*</span>
+    <span class="Validform_checktip">对应数据库的字段名</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+    <label for="username" class="layui-form-label">
+        <span class="x-red">*</span>输入类型
+    </label>
+    <div class="layui-input-inline">
+        <select name="type" lay-search>
+            <option value="">无</option>
+            {foreach name="typeList" item="item"}
+            <option value="{$item.value}" {eq name="model.type" value="$item['value']"} selected="selected" {/eq}>{$item.key}</option>
+            {/foreach}
+        </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+        <span class="x-red">*</span>
+        <span class="Validform_checktip ">选择输入类型</span>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label for="L_email" class="layui-form-label">
+        默认值
+    </label>
+    <div class="layui-input-inline">
+        <input type="text" value="{$model.default_value}" id="default_value" name="default_value"
+               autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label for="L_email" class="layui-form-label">
+        <span class="x-red">*</span>排序
+    </label>
+    <div class="layui-input-inline">
+        <input type="text" value="{$model.sort}" id="sort" name="sort" datatype="n"
+               autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+        <span class="x-red">*</span>
+        <span class="Validform_checktip ">值越小排序越靠前</span>
+    </div>
+</div>
+
+{eq name="is_extra" value="1"}
+<div class="layui-form-item">
+    <label class="layui-form-label">是否启用</label>
+    <div class="layui-input-inline w80">
+        <input type="checkbox" name="valid" title="启用" value="1" {eq name="model.valid" value="1" }checked="checked"{/eq} >
+
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+        <span class="x-red">*</span>勾选上则状态启用
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">是否导出</label>
+    <div class="layui-input-inline w80">
+        <input type="checkbox" name="output_valid" title="导出" value="1" {eq name="model.output_valid" value="1" }checked="checked"{/eq} >
+
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+        <span class="x-red">*</span>勾选上则状态启用
+    </div>
+</div>
+
+<input type="hidden" name="can_del" value="{$is_extra}">
+{else/}
+  <input type="hidden" name="valid" value="1">
+  <input type="hidden" name="output_valid" value="1">
+{/eq}
+
+
+<div class="layui-form-item">
+    <label for="L_repass" class="layui-form-label">
+    </label>
+    <input type="hidden" name="table_name" value="bird_drive">
+    <input type="hidden" name="updatetime" value="{:time()}">
+    <button class="layui-btn" type="submit">
+        提交
+    </button>
+</div>
+
+
+<script>
+    $(function () {
+        $(".mainform").Validform({
+            tiptype:function(msg,o,cssctl){
+                //msg：提示信息;
+                //o:{obj:*,type:*,curform:*}, obj指向的是当前验证的表单元素（或表单对象），type指示提示的状态，值为1、2、3、4， 1：正在检测/提交数据，2：通过验证，3：验证失败，4：提示ignore状态, curform为当前form对象;
+                //cssctl:内置的提示信息样式控制函数，该函数需传入两个参数：显示提示信息的对象 和 当前提示的状态（既形参o中的type）;
+                if(!o.obj.is("form")){
+                    //验证表单元素时o.obj为该表单元素，全部验证通过提交表单时o.obj为该表单对象;
+
+                    var objtip=o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                    cssctl(objtip,o.type);
+                    objtip.html(msg);
+                }else{
+                    console.log("o.obj is form");
+                    var objtip=o.obj.find("#msgdemo");
+                    cssctl(objtip,o.type);
+                    objtip.html(msg);
+                }
+            },
+            ajaxPost:true,
+            callback:function(data){
+                console.log(data);
+                if(data.code==1){
+                    layer.alert(data.msg, {icon: 6}, function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.location.reload();
+                        parent.layer.close(index);
+
+                    });
+                }else{
+                    msgFaild(data.msg);
+                }
+            }
+        });
+
+
+
+    });
+</script>
+
+<script>
+    layui.use(['form', 'layer'], function () {
+        $ = layui.jquery;
+        var form = layui.form
+            , layer = layui.layer;
+
+
+
+
+
+    });
+</script>

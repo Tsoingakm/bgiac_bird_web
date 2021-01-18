@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+
+
+</head>
+
+<body>
+  <div class="x-body w400 ma0">
+    <form class="layui-form mainform" method="post" action="{:url('Admin/doResetPwd')}">
+      <input type="hidden" name="aid" value="{$model.aid}"/>
+
+
+      <div class="layui-form-item">
+        <label for="phone" class="layui-form-label">
+                <span class="x-red">*</span>账号
+            </label>
+        <div class="layui-input-inline">
+
+          <input type="text" value="{$model.login_name}" id="login_name" name="login_name"
+                       autocomplete="off" class="layui-input " disabled>
+
+
+            </div>
+          <div class="layui-form-mid layui-word-aux">
+
+            <span class="Validform_checktip "></span>
+          </div>
+        </div>
+
+
+
+
+        <div class="layui-form-item">
+          <label for="L_pass" class="layui-form-label">
+                <span class="x-red">*</span>密码
+            </label>
+          <div class="layui-input-inline">
+            <input type="password" id="pwd" name="pwd" datatype="*6-16"
+                    errormsg="密码范围在6~16位之间！" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+              <span class="Validform_checktip">6到16位</span>
+            </div>
+
+          </div>
+          <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+                <span class="x-red">*</span>确认密码
+            </label>
+            <div class="layui-input-inline">
+              <input type="password" id="pwd1" name="pwd1" recheck="pwd" datatype="*6-16"
+                       autocomplete="off" class="layui-input">
+            </div>
+              <div class="layui-form-mid layui-word-aux">
+                <span class="Validform_checktip"></span>
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+            </label>
+              <input type="hidden" name="updatetime" value="{:time()}">
+              <button class="layui-btn" type="submit">
+                提交
+            </button>
+
+            </div>
+
+
+            <script>
+              $(function() {
+                $(".mainform").Validform({
+                  tiptype: function(msg, o, cssctl) {
+                    if (!o.obj.is("form")) {
+                      var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                      cssctl(objtip, o.type);
+                      objtip.html(msg);
+                    } else {
+                      console.log("o.obj is form");
+                      var objtip = o.obj.find("#msgdemo");
+                      cssctl(objtip, o.type);
+                      objtip.html(msg);
+                    }
+                  },
+                  ajaxPost: true,
+                  callback: function(data) {
+                    console.log(data);
+                    if (data.code == 1) {
+                      layer.alert(data.msg, {
+                        icon: 6
+                      }, function() {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.location.reload();
+                        parent.layer.close(index);
+
+                      });
+                    } else {
+                      msgFaild(data.msg);
+                    }
+                  }
+                });
+              });
+            </script>
+
+            <script>
+              layui.use(['form', 'layer'], function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                  layer = layui.layer;
+
+
+
+              });
+            </script>
+    </form>
+  </div>
+
+
+</body>
+
+</html>

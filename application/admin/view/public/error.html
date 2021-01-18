@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+
+
+</head>
+
+<body>
+<div class="x-body w600 ma0">
+    <div class="error_admin">
+        <h1 class="title">
+            <i class="icon iconfont " style="font-size: 88px">&#xe69c;</i> ERROR
+        </h1>
+        <p class="error-description"><?php echo(strip_tags($msg));?></p>
+
+        <p class="error-info dis_none">您可以：
+            <!--<a href="javascript:;" onclick="history.go(-1)" class="c-primary">&lt; 返回上一页</a>  -->
+            页面自动 <a id="href" href="<?php echo($url);?>">跳转</a> 等待时间： <b id="wait"><?php echo($wait);?></b>
+
+        </p>
+        <script type="text/javascript">
+            (function(){
+                var wait = document.getElementById('wait'),
+                    href = document.getElementById('href').href;
+                var interval = setInterval(function(){
+                    var time = --wait.innerHTML;
+                    if(time <= 0) {
+                       // location.href = href;
+                        clearInterval(interval);
+                    };
+                }, 1000);
+            })();
+        </script>
+    </div>
+</div>
+
+
+</body>
+
+</html>

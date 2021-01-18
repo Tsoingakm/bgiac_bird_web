@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+
+
+</head>
+
+<body>
+<div class="x-body w600  ma0">
+    <form class="layui-form mainform" method="post" action="{:url('DeviceDict/doEdit')}">
+        <input type="hidden" name="id" value="{$model.id}"/>
+        {include file="form/device_dict" /}
+    </form>
+</div>
+
+
+</body>
+
+</html>

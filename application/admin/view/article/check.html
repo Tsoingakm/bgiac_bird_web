@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <head>
+        {include file="public/header" /}
+    </head>
+</head>
+<body>
+
+<div class="top_btn tr">
+    <a class="layui-btn" onclick="showPrint()">
+        打印
+    </a>
+</div>
+<div class="main_container">
+
+    <div class="article_title">{$model.title}</div>
+    <div class="content">
+        <div class="article_content"><pre style="word-break: break-all;word-wrap:break-word;white-space:pre-wrap;">{$model.content}</pre></div>
+        <div class="fileList">
+            <span style="font-weight: bold">附件文件：</span>
+            {foreach name="fileList" item="item"}
+            <div class="fileItem">
+                文件名：<a style="color: #1E9FFF;cursor: pointer;" download="{$item.name}" onclick="downLoadFile('{$item.full_url}')">{$item.name}</a>
+            </div>
+            {/foreach}
+        </div>
+        <span style="font-weight: bold">员工签名：</span>
+        <div class="signList">
+            {foreach name="signList" item="item"}
+            <div class="signItem">
+                <img src="{$item.img}" style="width: 100%;height: 130px;">
+            </div>
+            {/foreach}
+        </div>
+    </div>
+</div>
+<style>
+    .main_container{width: 800px;margin: 0 auto}
+    .top_btn{width: 1200px;margin: 15px auto}
+    .content{margin-top: 15px;}
+    .article_content{font-size: 20px;padding-left: 15px;line-height: 1.5;}
+    .article_title{font-size: 22px;text-align: center;font-weight:bold;}
+    .fileList, .signList{margin-top: 15px;margin-bottom: 10px;}
+    .signList{display:flex; align-items: center; flex-wrap: wrap;}
+    .signItem{width: 160px;margin-right:15px;}
+    .signItem, .fileItem{line-height: 1.5;font-size: 18px;padding-left: 10px;margin-top: 10px;}
+    .tip{position:relative;text-align: center;}
+    .tip .left{position: absolute;left: 0;}
+    .tip .center{margin: 0 auto;text-align: center;}
+    .tip .right{position: absolute;right:0;top: 0;}
+
+    .tip2 .right{text-align: right;}
+    .table{margin-top:5px;font-size: 14px;width: 100%;}
+    .table td{
+        padding: 3px;
+    }
+
+    .right_td{
+        text-align: right;
+    }
+</style>
+
+<script>
+    function showPrint(){
+        console.log('q');
+        window.print();
+    }
+
+    function downLoadFile(url){
+        console.log(url);
+        window.open(url);
+    }
+</script>
+
+</body>
+</html>

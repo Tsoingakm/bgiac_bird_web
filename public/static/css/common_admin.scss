@@ -1,0 +1,547 @@
+//地图
+.map_main{
+  position: relative;
+  width: 100%;
+  .map_container{
+    width: 100%;
+    height: 100%;
+  }
+  .selectbox,.set_box{
+    display: inline-block;
+    position: absolute;
+    background: #fff;
+  }
+  .selectbox{
+    padding: 5px 10px;
+    border-radius: 5px;
+    form{
+      margin-bottom: 0;
+    }
+    top:20px;
+    left: 20px;
+  }
+  .select_bottom_box{
+    position: absolute;
+    padding: 5px 10px;
+    border-radius: 5px;
+    form{
+      margin-bottom: 0;
+    }
+    bottom:20px;
+    left: 20px;
+  }
+  .set_box{
+    width: 60px;
+    right: 12px;
+    border: solid 1px #ccc;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+  .set_box_map{
+    text-align: center;
+    top:30px;
+    padding-top: 1px;
+    img{
+      display: block;
+      width: 56px;
+      height: 46px;
+      margin: 0 auto;
+    }
+  }
+  .set_box_name{
+    height: 22px;
+    line-height: 22px;
+    top:104px;
+    text-align: left;
+    padding-left: 10px;
+    .item{
+      font-size: 10px;
+      i{
+        font-size: 10px;
+        opacity: 0;
+      }
+    }
+
+    .on{
+      color: #1E9FFF;
+      i{
+        opacity: 1;
+      }
+    }
+  }// end set_box
+  .set_box_name1{
+    height: 22px;
+    line-height: 22px;
+    top:148px;
+    text-align: left;
+    padding-left: 10px;
+    .item{
+      font-size: 10px;
+      i{
+        font-size: 10px;
+        opacity: 0;
+      }
+    }
+
+    .on{
+      color: #1E9FFF;
+      i{
+        opacity: 1;
+      }
+    }
+  }// end set_box
+  .set_box_name2{
+    height: 22px;
+    line-height: 22px;
+    top:192px;
+    text-align: left;
+    padding-left: 10px;
+    .item{
+      font-size: 10px;
+      i{
+        font-size: 10px;
+        opacity: 0;
+      }
+    }
+
+    .on{
+      color: #1E9FFF;
+      i{
+        opacity: 1;
+      }
+    }
+  }// end set_box
+  .set_box_name_color1{
+    height: 22px;
+    line-height: 22px;
+    top:192px;
+    text-align: left;
+    padding-left: 10px;
+    .item{
+      font-size: 10px;
+      i{
+        font-size: 10px;
+        opacity: 0;
+      }
+    }
+
+    .on{
+      color: #1E9FFF;
+      i{
+        opacity: 1;
+      }
+    }
+  }// end set_box
+  .set_box_name_color2{
+    height: 22px;
+    line-height: 22px;
+    top:192px;
+    text-align: left;
+    padding-left: 10px;
+    .item{
+      font-size: 10px;
+      i{
+        font-size: 10px;
+        opacity: 0;
+      }
+    }
+
+    .on{
+      color: #1E9FFF;
+      i{
+        opacity: 1;
+      }
+    }
+  }// end set_box
+  .amap-overlay-text-container{
+    background: none !important;
+    border: 0px solid #fff !important;
+  }
+}
+//end 地图
+.container_box{
+  display: block;
+}
+.container_box_right{
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 250px;
+  overflow-y: auto;
+  p{
+    padding: 6px 0 0 0;
+  }
+
+
+}
+.container_box_left{
+  margin-right: 250px;
+}
+
+.admin_img_uploader{
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: block;
+  .headimg{
+    width: 100px;
+    height: 100px;
+    display: block;
+  }
+  .del_icon{
+    font-size: 24px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #666;
+    cursor: pointer;
+  }
+  .upload_btn{
+    width: 100px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+}
+.page{
+  .num{
+    margin: auto 5px;
+  }
+}
+.error_admin{
+  text-align: center;
+  .title{
+    font-size: 88px;
+    color:  #afb5bf;
+  }
+  .error-description{
+    color:  #afb5bf;
+    font-size: 20px;
+    padding:20px;
+  }
+  .error-info{
+    color: #afb5bf;
+    font-size: 16px;
+  }
+}
+
+//===========以下是commoon===================
+a:hover {
+  text-decoration: none;
+}
+
+.blank_s {
+  height: 8px;
+}
+
+.blank_m {
+  height: 16px;
+}
+
+.blank_l {
+  height: 26px;
+}
+
+.bds {
+  border: solid 1px #ccc !important;
+}
+
+.bdd {
+  border: dashed 1px #ccc !important;
+}
+
+.bdd_t {
+  border-top: dashed 1px #ccc !important;
+}
+
+.bdd_l {
+  border-left: dashed 1px #ccc !important;
+}
+
+.bdd_r {
+  border-right: dashed 1px #ccc !important;
+}
+
+.bdd_t {
+  border-top: dashed 1px #ccc !important;
+}
+
+.bds_b {
+  border-bottom: solid 1px #ccc !important;
+}
+
+.bds_t {
+  border-top: solid 1px #ccc !important;
+}
+
+.bds_l {
+  border-left: solid 1px #ccc !important;
+}
+
+.bds_r {
+  border-right: solid 1px #ccc !important;
+}
+
+.bdd_b {
+  border-bottom: dashed 1px #ccc !important;
+}
+
+.bdn {
+  border: none !important;
+}
+
+.bdn_b {
+  border-bottom: none !important;
+}
+
+.bdn_t {
+  border-top: none !important;
+}
+
+.bdn_l {
+  border-left: none !important;
+}
+
+.bg_white {
+  background: #fff !important;
+}
+
+.bg_f5 {
+  background: #F5F5F5 !important;
+}
+
+.bg_ff {
+  background: #fff !important;
+}
+
+.bg_none {
+  background: none !important;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.cursor_none {
+  cursor: default !important;
+}
+
+.dis_blk {
+  display: block !important;
+}
+
+.dis_none {
+  display: none !important;
+}
+
+.dis_inline {
+  display: inline !important;
+}
+
+.dis_inb {
+  display: inline-block !important;
+}
+
+.clearfix {
+  clear: both;
+}
+
+.clearfix:after {
+  content: "clearfix";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.clear {
+  clear: both;
+}
+
+.fl {
+  float: left !important;
+}
+
+.fwb {
+  font-weight: bold;
+}
+
+.white {
+  color: #fff !important;
+}
+
+.red {
+  color: #ff0000 !important;
+}
+
+.black {
+  color: #000 !important;
+}
+
+.grey {
+  color: grey !important;
+}
+
+.blue {
+  color: blue !important;
+}
+
+.light-blue {
+  color: #009CEB !important;
+}
+
+.bgc_grey {
+  background: #ccc;
+}
+
+@for $i from 12 through 50 {
+  .fs#{$i} {
+    font-size: $i*1px !important;
+  }
+}
+
+.fr {
+  float: right !important;
+}
+
+@for $i from 1 through 10 {
+  .br#{$i*10} {
+    border-radius: #{$i*1}px !important;
+  }
+}
+
+@for $i from 1 through 10 {
+  .h#{$i*10} {
+    height: #{$i*10}px !important;
+  }
+}
+
+@for $i from 3 through 14 {
+  .h#{$i*50} {
+    height: #{$i*50}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .mb#{$i*5} {
+    margin-bottom: #{$i*5}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .mt#{$i*5} {
+    margin-top: #{$i*5}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .ml#{$i*5} {
+    margin-left: #{$i*5}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .mr#{$i*5} {
+    margin-right: #{$i*5}px !important;
+  }
+}
+
+@for $i from 10 through 50 {
+  .lh#{$i*10} {
+    line-height: $i*10% !important;
+  }
+}
+
+.m0 {
+  margin: 0 !important;
+}
+
+.ma0 {
+  margin: 0 auto;
+}
+
+.maf1 {
+  margin-left: -1px;
+}
+
+.pb0 {
+  padding-bottom: 0 !important;
+}
+
+@for $i from 0 through 12 {
+  .p#{$i*5} {
+    padding: #{$i*5}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .pl#{$i*5} {
+    padding-left: #{$i*5}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .pr#{$i*5} {
+    padding-right: #{$i*5}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .pb#{$i*5} {
+    padding-bottom: #{$i*5}px !important;
+  }
+}
+
+@for $i from 0 through 12 {
+  .pt#{$i*5} {
+    padding-top: #{$i*5}px !important;
+  }
+}
+
+@for $i from 1 through 100 {
+  .pct#{$i} {
+    width: $i*1%;
+  }
+}
+
+.nowrap {
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+  /*兼容opera*/
+  text-overflow: ellipsis;
+  /*这就是省略号喽*/
+  overflow: hidden;
+  /*设置超过的隐藏*/
+  white-space: nowrap;
+  /*设置不折行*/
+}
+
+.pos_r {
+  position: relative;
+}
+
+.pos_a {
+  position: absolute;
+}
+
+.pos_f {
+  position: fixed;
+}
+
+.tl {
+  text-align: left !important;
+}
+
+.tr {
+  text-align: right !important;
+}
+
+.tc {
+  text-align: center !important;
+}
+
+@for $i from 0 through 40 {
+  .w#{$i*20} {
+    width: #{$i*20}px !important;
+  }
+}

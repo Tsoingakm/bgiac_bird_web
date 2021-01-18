@@ -1,0 +1,84 @@
+<div class="layui-card">
+  <div class="layui-card-header">往期记录</div>
+  <div class="layui-card-body" style="max-height:700px; overflow-y:auto">
+    <ul class="layui-timeline">
+      {foreach name="records" item="item"}
+      <li class="layui-timeline-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+          <h3 class="layui-timeline-title">{$item.date} &nbsp; 巡视序号：{$item.view_number}</h3>
+          {foreach name="item.record" item="recording"}
+            <div class="layui-row" style="cursor:pointer">
+              <div class="layui-col-md2">
+                {:date("H:i",$recording.time_int)}
+              </div>
+              <div class="layui-col-md3">
+                {$recording.area}
+              </div>
+              <div class="layui-col-md3">
+                &nbsp;{$recording.bird_name}
+              </div>
+              <div class="layui-col-md2">
+                {$recording.bird_num}只
+              </div>
+              <div class="layui-col-md2">
+                <button class="layui-btn layui-btn-xs copy" record-id="{$recording.id}">
+                  <i class="layui-icon">&#xe630;</i>复制
+                </button>
+              </div>
+            </div>
+          {/foreach}
+        </div>
+      </li>
+      {/foreach}
+    </ul>
+  </div>
+</div>
+
+<script>
+  $('.copy').on('click', function() {
+    var id = $(this).attr('record-id');
+    $.ajax({
+      url: "{:url('BirdSupervise/findAll')}",
+      type: "post",
+      dataType: "json",
+      data: {
+        id: id
+      },
+      success: function(res) {
+        if (res.status === true) {
+          reAssignAll(res.data);
+          refresh();
+        }
+      }
+    });
+  });
+
+  function reAssignAll(data) {
+    $('#view_number').val(data['view_number']);
+    $('#worker1').val(data['worker1']);
+    $('#worker2').val(data['worker2']);
+    $('#weather1').val(data['weather1']);
+    $('#weather2').val(data['weather2']);
+    $('#temperature').val(data['temperature']);
+    $('#humidity').val(data['humidity']);
+    $('#pressure').val(data['pressure']);
+    $('#wind_direction').val(data['wind_direction']);
+    $('#wind_power').val(data['wind_power']);
+    $('#time_str').val(data['time_str']);
+    $('#realness').val(data['realness']);
+    $('#height').val(data['height']);
+    $('#describe').val(data['describe']);
+    $('#bird_name').val(data['bird_name']);
+    $('#area').val(data['area']);
+    $('#bird_num').val(data['bird_num']);
+    $('#aid').val(data['aid']);
+  }
+
+  function refresh() {
+    layui.use('form', function() {
+      var form = layui.form;
+      form.render();
+    });
+  }
+</script>

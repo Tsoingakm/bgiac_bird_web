@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+
+      <div class="layui-container" style="width:1700px;overflow:hidden">
+          <div class="layui-row mt5">
+            <div class="layui-col-lg3 layui-col-md3">
+              {include file="bird_supervise/record" /}
+            </div>
+
+            <div class="layui-col-lg9 layui-col-md9">
+                <form class="layui-form mainform" method="post" action="{:url('BirdSupervise/doAdd')}">
+                  <input type="hidden" name="addtime" value="{:time()}"> {include file="form/bird_supervise" /}
+                </form>
+            </div>
+
+          </div>
+      </div>
+
+</body>
+
+</html>

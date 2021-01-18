@@ -1,0 +1,393 @@
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>日期
+  </label>
+  <div class="layui-input-inline">
+    <input type="text" value="{$model.working_date}" name="working_date" id="working_date" datatype="*" autocomplete="off" class="layui-input">
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择日期</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>开始时间
+    </label>
+    <div class="layui-input-inline">
+      <input type="text" value="{$model.start_time}" name="start_time" id="start_time" datatype="*" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip ">请选择开始时间</span>
+    </div>
+  </div>
+
+  <div class="layui-inline">
+    <label class="layui-form-label">
+      <span class="x-red">*</span>结束时间
+    </label>
+    <div class="layui-input-inline">
+      <input type="text" value="{$model.end_time}" name="end_time" id="end_time" datatype="*" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux w100">
+      <span class="Validform_checktip ">请选择结束时间</span>
+    </div>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>维护类型
+  </label>
+  <div class="layui-input-inline">
+    <select name="work_type" id="work_type" datatype="*" lay-search>
+      <option value="">无</option>
+        {foreach name="work_lawn_type_list" item="item"}
+          <option value="{$item.key}" {eq name="model.work_type" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+        {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择维护类型</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>管理员一
+  </label>
+  <div class="layui-input-inline">
+    <select name="manager1" datatype="*" id="manager1" lay-search>
+      <option value="">无</option>
+      {foreach name="worker_list" item="item"}
+        <option value="{$item.key}" {eq name="model.manager1" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择管理员</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>管理员二
+  </label>
+  <div class="layui-input-inline">
+    <select name="manager2" datatype="*" id="manager2" lay-search>
+      <option value="">无</option>
+      {foreach name="worker_list" item="item"}
+        <option value="{$item.key}" {eq name="model.manager2" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择管理员</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    管理员三
+  </label>
+  <div class="layui-input-inline">
+    <select name="manager3" id="manager3" lay-search>
+      <option value="">无</option>
+      {foreach name="worker_list" item="item"}
+        <option value="{$item.key}" {eq name="model.manager3" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择管理员</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>服务商负责人
+  </label>
+  <div class="layui-input-inline">
+    <select name="service_provider" datatype="*" id="service_provider" lay-search>
+      <option value="">无</option>
+      {foreach name="work_lawn_service_list" item="item"}
+        <option value="{$item.key}" {eq name="model.service_provider" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w105">
+    <span class="Validform_checktip">请选择服务商负责人</span>
+  </div>
+</div>
+
+{eq name=":request()->action()" value="add"}
+<hr>
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>作业情况
+  </label>
+  <div class="layui-input-inline">
+    <div class="layui-btn layui-btn-sm" id="add_item">
+      <i class="layui-icon">&#xe654;</i>
+    </div>
+    <table id="operation_situation" lay-filter="operation_situation"></table>
+    <input type="hidden" name="operation_situation" id="tableData">
+  </div>
+</div>
+
+<script type="text/html" id="table_action">
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+  layui.use('table', function () {
+    var table = layui.table;
+    //第一个实例
+    table.render({
+      elem: '#operation_situation',
+      width: 800,
+      cols: [
+        [
+          { //表头
+            field: 'maintain_area',
+            title: '维护区域',
+            width: 120
+          }, {
+            field: 'flight_area',
+            title: '飞行区方位',
+            width: 120
+          }, {
+            field: 'work_area',
+            title: '作业面积',
+            width: 100
+          },{
+            field: 'unit_str',
+            title: '面积单位',
+            width: 120
+          },{
+            field: 'harvest_area',
+            title: '收草面积',
+            width: 100
+          }, {
+            field: 'remarks',
+            title: '备注',
+            width: 132
+          }, {
+            field: 'action',
+            title: '操作',
+            width: 100,
+            toolbar: '#table_action'
+          }
+        ]
+      ]
+    });
+
+    table.on('tool(operation_situation)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+      var data = obj.data; //获得当前行数据
+      var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+      var tr = obj.tr; //获得当前行 tr 的DOM对象
+      if(layEvent === 'del') {
+        layer.confirm('删除后不可恢复，请确认', function (index) {
+          obj.del();
+          layer.close(index);
+        });
+      }
+    });
+
+  });
+
+  $('#add_item').on('click', function () {
+    add_item()
+  });
+
+  function add_item() {
+    var url = '{:url("WorkLawn/add_table")}';
+    layer.open({
+      title: '添加作业情况',
+      type: 2, skin: 'layui-layer-rim', //加上边框
+      area: [
+        '550px', '480px'
+      ], //宽高
+      content: url
+    });
+  }
+
+  function addData(data) {
+    console.log('bb', data);
+    var table = layui.table;
+    var allData = table.cache["operation_situation"];
+    if (allData == null) {
+      allData = [data];
+    } else {
+      allData.push(data);
+    }
+    table.reload('operation_situation', {
+      data: allData,
+      done: function (res, curr, count) {
+        var total = JSON.stringify(res['data']);
+        $('#tableData').val(total);
+      }
+    });
+  }
+</script>
+<hr>
+{/eq}
+
+{eq name=":request()->action()" value="edit"}
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>维护区域
+  </label>
+  <div class="layui-input-inline">
+    <select name="maintain_area" id="maintain_area" datatype="*" lay-search="lay-search">
+      <option value="">无</option>
+      {foreach name="area_list" item="item"}
+        <option value="{$item['key']}" {eq name="model.maintain_area" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择维护区域</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>飞行区方位
+  </label>
+  <div class="layui-input-inline">
+    <select name="flight_area" id="flight_area" datatype="*" lay-search="lay-search">
+      <option value="">无</option>
+      {foreach name="work_lawn_flight_list" item="item"}
+        <option value="{$item['key']}" {eq name="model.flight_area" value="$item['key']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择飞行区方位</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>作业面积
+  </label>
+  <div class="layui-input-inline">
+    <input type="text" value="{$model.work_area}" name="work_area" id="work_area" datatype="*" autocomplete="off" class="layui-input">
+  </div>
+  <div class="layui-form-mid layui-word-aux w110">
+    <span class="Validform_checktip ">请填写作业面积(m²)</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>面积单位
+  </label>
+  <div class="layui-input-inline">
+    <select name="area_unit" id="area_unit" datatype="*" lay-search="lay-search">
+      <option value="">无</option>
+      {foreach name="work_lawn_unit_list" item="item"}
+      <option value="{$item['value']}" {eq name="model.area_unit" value="$item['value']" } selected="selected" {/eq}>{$item.key}</option>
+      {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w110">
+    <span class="Validform_checktip ">请选择面积单位</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    收草面积
+  </label>
+  <div class="layui-input-inline">
+    <input type="text" value="{$model.harvest_area}" name="harvest_area" id="harvest_area" datatype="*" autocomplete="off" class="layui-input">
+  </div>
+  <div class="layui-form-mid layui-word-aux w110">
+    <span class="Validform_checktip ">请填写收草面积(m²)</span>
+  </div>
+</div>
+
+<div class="layui-form-item layui-form-text">
+  <label class="layui-form-label">备注</label>
+  <div class="layui-input-inline w300">
+    <textarea id="remarks" name="remarks" placeholder="请输入备注" class="layui-textarea h100">{$model.remarks}</textarea>
+  </div>
+</div>
+{/eq}
+
+{foreach name="renderHTML" item="item"}{$item}{/foreach}
+
+<div class="layui-form-item">
+  <label class="layui-form-label">
+    <span class="x-red">*</span>录入人员
+  </label>
+  <div class="layui-input-inline">
+    <select name="aid" datatype="*" id="aid" lay-search>
+    <option value="">无</option>
+    {foreach name="entering_list" item="item"}
+      <option value="{$item.key}" {eq name="model.aid" value="$item['key']" } selected="selected" {/eq}>{$item.value}</option>
+    {/foreach}
+    </select>
+  </div>
+  <div class="layui-form-mid layui-word-aux w100">
+    <span class="Validform_checktip">请选择录入人员</span>
+  </div>
+</div>
+
+<div class="layui-form-item">
+  <label class="layui-form-label"></label>
+  <button class="layui-btn" type="submit">
+    提交
+  </button>
+</div>
+
+<script>
+  layui.use('laydate', function() {
+    var laydate = layui.laydate;
+    laydate.render({ elem: '#working_date', format: 'yyyy/M/d' });
+    laydate.render({ elem: '#start_time', type: 'time', format: "H:mm" });
+    laydate.render({ elem: '#end_time', type: 'time', format: "H:mm" });
+  });
+</script>
+
+<script>
+  $(function() {
+    $(".mainform").Validform({
+      tiptype: function(msg, o, cssctl) {
+        if(!o.obj.is("form")){
+          var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+          cssctl(objtip, o.type);
+          objtip.html(msg);
+        }
+        else{
+          var objtip = o.obj.find("#msgdemo");
+          cssctl(objtip, o.type);
+          objtip.html(msg);
+        }
+      },
+      ajaxPost: true,
+      callback: function(data) {
+        if(data.code == 1){
+          layer.alert(data.msg, { icon: 6 }, function() {
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.location.reload();
+            parent.layer.close(index);
+          });
+        }
+        else{
+          msgFaild(data.msg);
+        }
+      }
+    });
+
+  });
+</script>
+
+<style>
+  .laydate-time-list{padding-bottom:0;overflow:hidden}
+  .laydate-time-list>li{width:50%!important;}
+  .laydate-time-list>li:last-child { display: none;}
+</style>

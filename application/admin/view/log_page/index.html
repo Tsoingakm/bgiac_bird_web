@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row tl">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('LogPage/index')}">
+        <input class="layui-input" placeholder="开始日" name="begin_day" id="begin_day" value="{$begin_day}">
+        <input class="layui-input" placeholder="截止日" name="end_day" id="end_day" value="{$end_day}">
+        <input type="text" name="keyword" placeholder="请输入日志内容|操作人" autocomplete="off" class="layui-input" value="{$keyword}">
+        <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <div style="display: inline-block;width: 100px; height: 40px">&nbsp;</div>
+
+      <button class="layui-btn layui-btn-danger dis_none" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+
+      <span class="x-right" style="line-height:40px">共有数据：{$totalRows} 条</span>
+    </xblock>
+    <table class="layui-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>日志内容</th>
+          <th>操作人</th>
+          <th>时间</th>
+      </thead>
+      <tbody>
+        {foreach name="list" item="item"}
+          <tr>
+            <td>{$item.log_id}</td>
+            <td>{$item.content}</td>
+            <td>{$item.admin_name}</td>
+            <td>{$item.addtime|date='Y-m-d H:i:s',###}</td>
+          </tr>
+        {/foreach}
+      </tbody>
+    </table>
+
+
+    <div class="page">
+      {$page}
+    </div>
+
+  </div>
+  <script>
+    layui.use('laydate', function() {
+      var laydate = layui.laydate;
+
+      //执行一个laydate实例
+      laydate.render({
+        elem: '#begin_day' //指定元素
+      });
+
+      //执行一个laydate实例
+      laydate.render({
+        elem: '#end_day' //指定元素
+      });
+    });
+
+    /*用户-删除*/
+    function member_del(obj, id) {
+      layer.confirm('确认要删除吗？', function(index) {
+        $.post('{:url("LogPage/doDel")}', {
+          'ids': id
+        }, function(data) {
+          if (data.code == 1) {
+            //发异步删除数据
+            $(obj).parents("tr").remove();
+            layer.msg(data.msg, {
+              icon: 1,
+              time: 1000
+            });
+          } else {
+            msgFaild(data.msg);
+          }
+        }, 'json');
+
+      });
+    }
+
+
+    function delAll(argument) {
+
+      var data = tableCheck.getData();
+      layer.confirm('确认要删除选中的记录吗？', function(index) {
+        $.post('{:url("LogPage/doDel")}', {
+          'ids': data.join(",")
+        }, function(data) {
+          if (data.code == 1) {
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', {
+              icon: 1
+            });
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+          } else {
+            msgFaild(data.msg);
+          }
+        }, 'json');
+
+      });
+    }
+  </script>
+
+
+</body>
+
+</html>

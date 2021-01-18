@@ -1,0 +1,84 @@
+<div class="layui-card">
+  <div class="layui-card-header">往期记录</div>
+  <div class="layui-card-body" style="max-height:700px; overflow-y:auto">
+    <ul class="layui-timeline">
+      {foreach name="records" item="item"}
+      <li class="layui-timeline-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+          <h3 class="layui-timeline-title">{$item.date} &nbsp; 喷药次数：{$item.times}</h3>
+          {foreach name="item.record" item="recording"}
+            <div class="layui-row" style="cursor:pointer">
+              <div class="layui-col-md4">
+                {$recording.maintain_area}
+              </div>
+              <div class="layui-col-md4">
+                &nbsp;{$recording.flight_area}
+              </div>
+              <div class="layui-col-md2">
+                {$recording.work_area}
+              </div>
+              <div class="layui-col-md2">
+                <button class="layui-btn layui-btn-xs copy" record-id="{$recording.id}">
+                  <i class="layui-icon">&#xe630;</i>复制
+                </button>
+              </div>
+            </div>
+          {/foreach}
+        </div>
+      </li>
+      {/foreach}
+    </ul>
+  </div>
+</div>
+
+<script>
+  $('.copy').on('click', function() {
+    var id = $(this).attr('record-id');
+    $.ajax({
+      url: "{:url('WorkInsect/findAll')}",
+      type: "post",
+      dataType: "json",
+      data: {
+        id: id
+      },
+      success: function(res) {
+        if (res.status === true) {
+          console.log(res);
+          reAssignAll(res.data);
+          refresh();
+        }
+      }
+    });
+  });
+
+  function reAssignAll(data) {
+    $('#working_date').val(data['working_date']);
+    $('#time_period').val(data['time_period']);
+    $('#spary_times').val(data['spary_times']);
+    $('#water_consumption').val(data['water_consumption']);
+    $('#pharmacy_name1').val(data['pharmacy_name1']);
+    $('#dosage1').val(data['dosage1']);
+    $('#pharmacy_name2').val(data['pharmacy_name2']);
+    $('#dosage2').val(data['dosage2']);
+    $('#pharmacy_name3').val(data['pharmacy_name3']);
+    $('#dosage3').val(data['dosage3']);
+    $('#start_time').val(data['start_time']);
+    $('#end_time').val(data['end_time']);
+    $('#manager1').val(data['manager1']);
+    $('#manager2').val(data['manager2']);
+    $('#service_provider').val(data['service_provider']);
+    $('#maintain_area').val(data['maintain_area']);
+    $('#flight_area').val(data['flight_area']);
+    $('#work_area').val(data['work_area']);
+    $('#area_unit').val(data['area_unit']);
+    $('#aid').val(data['aid']);
+  }
+
+  function refresh() {
+    layui.use('form', function() {
+      var form = layui.form;
+      form.render();
+    });
+  }
+</script>

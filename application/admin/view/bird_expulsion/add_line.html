@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+<div class="x-body">
+    <div class="map_main pos_r">
+
+        <div class="pos_r map_container" id="container"></div>
+        <div class="selectbox">
+            <button class="layui-btn" onclick="goBack()">上一步</button>
+            <button class="layui-btn" onclick="reset()">重绘</button>
+            <button class="layui-btn" onclick="complete()">完成</button>
+        </div>
+        <div class="set_box set_box_map">
+            <div class="d2" style="display: none" onclick="changeMap(2)">
+                <img src="__STATIC__/images/d2map.png"/>
+                <span>地图</span>
+            </div>
+            <div class="d3" onclick="changeMap(3)">
+                <img src="__STATIC__/images/d3map.png"/>
+                <span>卫星</span>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        var map = null;//地图对象
+        var jsonStr = '{$areaList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var areaList = eval("(" + jsonStr + ")");
+        jsonStr = '{$insectList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+        var workList = eval("(" + jsonStr + ")");
+    </script>
+</div>
+</body>
+
+{include file="public/inc_amap"/}
+<script>
+    var map;
+    var pointList = [];
+    var points = "{$points}";
+    var icon;
+    var markerList = [];
+    var polyline;
+    var arrowLine1;
+    var arrowLine2;
+    $(function () {
+        initWindow();
+        $(window).resize(function () {
+            initWindow();
+        });
+        map = clickMapInit();
+        map.on('click', showInfoClick);
+
+        icon = new AMap.Icon({
+            // 图标尺寸
+            size: new AMap.Size(10, 10),
+            // 图标的取图地址
+            image: '__STATIC__/images/pointer.png',
+            // 图标所用图片大小
+            imageSize: new AMap.Size(10, 10),
+        });
+        if(points && points != ''){
+            var pointStrList = points.split('/');
+            for(let i=0; i<pointStrList.length; i++){
+                var point = pointStrList[i].split(',');
+                addMarker(point);
+                pointList.push(point);
+            }
+            addLine(pointList);
+            addArrow(pointList, 10, 48);
+        }
+    });
+    //初始化地图窗口
+    function initWindow() {
+        $(".map_main").height($(window).height() - 40);
+    }
+
+    function addArrow(polyline,length,angleValue) { //绘制箭头的函数
+        if(arrowLine1){
+            arrowLine1.setMap(null);
+        }
+        if(arrowLine2){
+            arrowLine2.setMap(null);
+        }
+        if(polyline.length > 1){
+            var zoom = map.getZoom();
+            var pixelStart = map.lnglatToPixel(polyline[polyline.length - 2], zoom);
+            var pixelEnd = map.lnglatToPixel(polyline[polyline.length - 1], zoom);
+            var angle = angleValue;//箭头和主线的夹角
+            var r = length; // r/Math.sin(angle)代表箭头长度
+            var delta = 0; //主线斜率，垂直时无斜率
+            var param = 0; //代码简洁考虑
+            var pixelTemX, pixelTemY;//临时点坐标
+            var pixelX, pixelY, pixelX1, pixelY1;//箭头两个点
+            if (pixelEnd.x - pixelStart.x == 0) { //斜率不存在是时
+                pixelTemX = pixelEnd.x;
+                if (pixelEnd.y > pixelStart.y) {
+                    pixelTemY = pixelEnd.y - r;
+                } else {
+                    pixelTemY = pixelEnd.y + r;
+                }
+                //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法
+                pixelX = pixelTemX - r * Math.tan(angle);
+                pixelX1 = pixelTemX + r * Math.tan(angle);
+                pixelY = pixelY1 = pixelTemY;
+            } else  //斜率存在时
+            {
+                delta = (pixelEnd.y - pixelStart.y) / (pixelEnd.x - pixelStart.x);
+                param = Math.sqrt(delta * delta + 1);
+
+                if ((pixelEnd.x - pixelStart.x) < 0) //第二、三象限
+                {
+                    pixelTemX = pixelEnd.x + r / param;
+                    pixelTemY = pixelEnd.y + delta * r / param;
+                } else//第一、四象限
+                {
+                    pixelTemX = pixelEnd.x - r / param;
+                    pixelTemY = pixelEnd.y - delta * r / param;
+                }
+                //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法
+                pixelX = pixelTemX + Math.tan(angle) * r * delta / param;
+                pixelY = pixelTemY - Math.tan(angle) * r / param;
+
+                pixelX1 = pixelTemX - Math.tan(angle) * r * delta / param;
+                pixelY1 = pixelTemY + Math.tan(angle) * r / param;
+            }
+
+            var pointArrow = map.pixelToLngLat(new AMap.Pixel(pixelX, pixelY), zoom);
+            var pointArrow1 = map.pixelToLngLat(new AMap.Pixel(pixelX1, pixelY1), zoom);
+
+            var pointList1 = [];
+            var pointList2 = [];
+
+            //箭头折线路径
+            pointList1.push(pointArrow);
+            pointList1.push(new AMap.LngLat(polyline[polyline.length - 1][0],polyline[polyline.length - 1][1]));
+
+            pointList2.push(pointArrow1);
+            pointList2.push(new AMap.LngLat(polyline[polyline.length - 1][0],polyline[polyline.length - 1][1]));
+
+            arrowLine1 = new AMap.Polyline({
+                path:pointList1, //设置线覆盖物路径
+                strokeColor:"red", //线颜色
+                strokeOpacity:1, //线透明度
+                strokeWeight:2, //线宽
+                strokeStyle:"solid", //线样式
+                strokeDasharray:[10,5] //补充线样式
+            });
+            arrowLine1.setMap(map);
+
+            arrowLine2 = new AMap.Polyline({
+                path:pointList2, //设置线覆盖物路径
+                strokeColor:"red", //线颜色
+                strokeOpacity:1, //线透明度
+                strokeWeight:2, //线宽
+                strokeStyle:"solid", //线样式
+                strokeDasharray:[10,5] //补充线样式
+            });
+            arrowLine2.setMap(map);
+        }
+
+    }
+
+    function showInfoClick(e){
+        var point = [e.lnglat.getLng(), e.lnglat.getLat()];
+        pointList.push(point);
+        addMarker(point);
+        addLine(pointList);
+        addArrow(pointList, 10, 48);
+    }
+
+    function addMarker(point) {
+        var marker = new AMap.Marker({
+            icon: icon,
+            position: point,
+            anchor: 'center',
+            offset: new AMap.Pixel(0, 0)
+        });
+        marker.setMap(map);
+        markerList.push(marker);
+    }
+
+    function addLine(arr){
+        if(polyline){
+            polyline.setMap(null);
+        }
+        if(arr.length > 1){
+            var lineArr = new Array();//创建线覆盖物节点坐标数组
+            var color="red";
+            for(var i=0;i<arr.length;i++)
+            {
+                lineArr.push(new AMap.LngLat(arr[i][0],arr[i][1]));
+            }
+            polyline = new AMap.Polyline({
+                path:lineArr, //设置线覆盖物路径
+                strokeColor:""+color+"", //线颜色
+                strokeOpacity:1, //线透明度
+                strokeWeight:2, //线宽
+                strokeStyle:"solid", //线样式
+                strokeDasharray:[10,5] //补充线样式
+            });
+            polyline.setMap(map);
+        }
+    }
+
+    function goBack(){
+        if(pointList.length > 0){
+            pointList.splice(pointList.length - 1, 1);
+            markerList[markerList.length - 1].setMap(null);
+            markerList.splice(markerList.length - 1, 1);
+            map.remove(polyline);
+            addLine(pointList);
+            addArrow(pointList, 10, 48);
+        }
+    }
+
+    function reset(){
+        pointList = [];
+        for(let i=0; i<markerList.length; i++){
+            markerList[i].setMap(null);
+        }
+        markerList = [];
+        map.remove(polyline);
+        addLine(pointList);
+        addArrow(pointList, 10, 48);
+    }
+
+    function complete(){
+        window.parent.addData(pointList);
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index);
+    }
+</script>
+
+</html>

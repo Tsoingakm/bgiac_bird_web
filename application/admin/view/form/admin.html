@@ -1,0 +1,241 @@
+<div class="layui-form-item">
+  <label for="phone" class="layui-form-label">
+        <span class="x-red">*</span>账号
+    </label>
+  <div class="layui-input-inline">
+    {eq name="isEdit" value="1"}
+    <input type="text" value="{$model.login_name}" id="login_name" name="login_name" autocomplete="off" class="layui-input " disabled> {else/}
+    <input type="text" value="{$model.login_name}" id="login_name" name="login_name" autocomplete="off" class="layui-input " datatype="*" ajaxurl="{:url('Admin/checkLoginName')}"> {/eq}
+  </div>
+    <div class="layui-form-mid layui-word-aux">
+      <span class="Validform_checktip ">输入登录账号，不能与已存在账号重名</span>
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label for="L_email" class="layui-form-label">
+        <span class="x-red">*</span>姓名
+    </label>
+    <div class="layui-input-inline">
+      <input type="text" value="{$model.real_name}" id="real_name" name="real_name" datatype="*" autocomplete="off" class="layui-input">
+  </div>
+      <div class="layui-form-mid layui-word-aux">
+
+        <span class="Validform_checktip ">输入员工姓名</span>
+      </div>
+    </div>
+
+    <div class="layui-form-item">
+      <label for="phone" class="layui-form-label">
+        <span class="x-red">*</span>员工相片
+    </label>
+      <div class="layui-input-inline">
+        <div class="admin_img_uploader">
+          <input type="hidden" name="headimg" value="{$model.headimg}" id="headimg" datatype="*" nullmsg="请上传员工相片" />
+          <img src="{$model.headimg|default='__STATIC__/images/headimg.jpg'}" class="headimg" id="headimg_img" />
+          <i class="layui-icon del_icon" title="点击删除图片" id="del_btn" {empty name="model.headimg" } style="display:none" {/empty} onclick="delImg()">&#x1007;</i>
+
+          <button type="button" class="layui-btn layui-btn-sm upload_btn" id="upload_btn" {notempty name="model.headimg" } style="display:none" {/notempty}>
+                <i class="layui-icon" title="点击选择图片上传">&#xe67c;</i>上传图片
+            </button>
+        </div>
+        <div class="layui-word-aux">
+
+          <span class="Validform_checktip "></span>
+        </div>
+      </div>
+
+      <script>
+        var defaultImg = '__STATIC__/images/headimg.jpg';
+        layui.use('upload', function() {
+          var upload = layui.upload;
+
+          //执行实例
+          var uploadInst = upload.render({
+            elem: '#upload_btn' //绑定元素
+            ,url: '{:url("Upload/img")}' //上传接口
+            ,done: function(res) {
+              if (res.code == 1) {
+                $("#del_btn").show();
+                $("#headimg").val(res.url);
+                $("#headimg_img").attr('src', res.url);
+                $("#upload_btn").hide();
+              } else {
+                msgFaild(res.msg);
+              }
+              //上传完毕回调
+            },
+            error: function() {
+              //请求异常回调
+            }
+          });
+        });
+
+    function delImg() {
+      $("#headimg").val("");
+      $("#headimg_img").attr("src", defaultImg);
+      $("#del_btn").hide();
+      $("#upload_btn").show();
+    }
+  </script>
+    </div>
+    <div class="layui-form-item">
+      <label for="L_email" class="layui-form-label">
+        <span class="x-red">*</span>手机
+    </label>
+      <div class="layui-input-inline">
+        <input type="text" value="{$model.tel}" id="tel" name="tel" datatype="m" autocomplete="off" class="layui-input">
+  </div>
+        <div class="layui-form-mid layui-word-aux">
+          <span class="Validform_checktip ">请填写员工手机号码</span>
+        </div>
+      </div>
+
+      {eq name="isEdit" value="1"}{else/}
+      <div class="layui-form-item">
+        <label for="L_pass" class="layui-form-label">
+        <span class="x-red">*</span>密码
+    </label>
+        <div class="layui-input-inline">
+          <input type="password" id="pwd" name="pwd" datatype="*6-16" errormsg="密码范围在6~15位之间！" autocomplete="off" class="layui-input">
+  </div>
+          <div class="layui-form-mid layui-word-aux">
+            <span class="Validform_checktip ">请输入6到16位</span>
+          </div>
+
+        </div>
+        <div class="layui-form-item">
+          <label for="L_repass" class="layui-form-label">
+        <span class="x-red">*</span>确认密码
+    </label>
+          <div class="layui-input-inline">
+            <input type="password" id="pwd1" name="pwd1" recheck="pwd" datatype="*6-16" autocomplete="off" class="layui-input">
+  </div>
+            <div class="layui-form-mid layui-word-aux">
+              <span class="Validform_checktip "></span>
+            </div>
+          </div>
+          {/eq}
+
+          <div class="layui-form-item">
+            <label for="username" class="layui-form-label">
+        <span class="x-red">*</span>角色
+    </label>
+            <div class="layui-input-inline">
+              <select name="ar_id" datatype="*" lay-search>
+            <option value="">无</option>
+            {foreach name="arList" item="item"}
+            <option value="{$item.ar_id}" {eq name="model.ar_id" value="$item['ar_id']" } selected="selected" {
+            /eq}>{$item.ar_name}</option>
+            {/foreach}
+        </select>
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+
+              <span class="Validform_checktip">请选择角色</span>
+            </div>
+          </div>
+
+          <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-inline w80">
+              <input type="checkbox" name="valid" title="启用" value="1" {eq name="model.valid" value="1" }checked="checked" {/eq}>
+
+  </div>
+  <div class="layui-form-mid layui-word-aux">
+              <span class="x-red">*</span>勾选上则状态启用
+            </div>
+          </div>
+
+          <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+    </label>
+            <input type="hidden" name="updatetime" value="{:time()}">
+            <button class="layui-btn" type="submit">
+        提交
+    </button>
+
+          </div>
+
+
+          <script>
+            $(function() {
+              $(".mainform").Validform({
+                tiptype: function(msg, o, cssctl) {
+                  //msg：提示信息;
+                  //o:{obj:*,type:*,curform:*}, obj指向的是当前验证的表单元素（或表单对象），type指示提示的状态，值为1、2、3、4， 1：正在检测/提交数据，2：通过验证，3：验证失败，4：提示ignore状态, curform为当前form对象;
+                  //cssctl:内置的提示信息样式控制函数，该函数需传入两个参数：显示提示信息的对象 和 当前提示的状态（既形参o中的type）;
+                  if (!o.obj.is("form")) {
+                    //验证表单元素时o.obj为该表单元素，全部验证通过提交表单时o.obj为该表单对象;
+                    var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                  } else {
+                    console.log("o.obj is form");
+                    var objtip = o.obj.find("#msgdemo");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                  }
+                },
+                ajaxPost: true,
+                callback: function(data) {
+                  console.log(data);
+                  if (data.code == 1) {
+                    layer.alert(data.msg, {
+                      icon: 6
+                    }, function() {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.location.reload();
+                        parent.layer.close(index);
+                    });
+                  } else {
+                    msgFaild(data.msg);
+                  }
+                }
+              });
+
+
+            });
+          </script>
+
+          <script>
+            layui.use(['form', 'layer'], function() {
+              $ = layui.jquery;
+              var form = layui.form,
+                layer = layui.layer;
+
+              //自定义验证规则
+              form.verify({
+                ap_code: function(value) {
+                  if (value.length < 5) {
+                    return '昵称至少得5个字符啊';
+                  }
+                },
+                pass: [/(.+){6,12}$/, '密码必须6到12位'],
+                repass: function(value) {
+                  if ($('#L_pass').val() != $('#L_repass').val()) {
+                    return '两次密码不一致';
+                  }
+                }
+              });
+
+
+              //监听提交
+              form.on('submit(add)', function(data) {
+
+                layer.alert("增加成功", {
+                  icon: 6
+                }, function() {
+                  // 获得frame索引
+                  var index = parent.layer.getFrameIndex(window.name);
+                  //关闭当前frame
+                  parent.layer.close(index);
+                });
+                return false;
+              });
+
+
+            });
+          </script>

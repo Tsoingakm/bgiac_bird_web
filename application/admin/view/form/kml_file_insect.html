@@ -1,0 +1,165 @@
+{eq name="isEdit" value="1"}
+<div class="layui-form-item">
+    <label class="layui-form-label"> <span class="x-red">*</span> KML文件</label>
+    <div class="layui-input-inline w300">
+        <input name="kml_path" placeholder="kml文件地址" value="{$model.kml_path}" id="kml_path" class="layui-input "
+               datatype="*" nullmsg="请上传kml文件" disabled="disabled">
+
+    </div>
+
+
+
+</div>
+{else/}
+<div class="layui-form-item">
+    <label class="layui-form-label"> <span class="x-red">*</span> KML文件</label>
+    <div class="layui-input-inline">
+        <input name="kml_path" placeholder="kml文件地址" value="{$model.kml_path}" id="kml_path" class="layui-input w200"
+               datatype="*" nullmsg="请上传kml文件">
+        <input type="hidden" name="kml_size" id="kml_size" value="{$model.kml_size}"/>
+        <input type="hidden" name="kml_table" value="work_insect"/>
+    </div>
+    <div class="layui-input-inline layui-btn-container" style="width: auto;">
+        <button type="button" class="layui-btn layui-btn-primary" id="kml_upload">
+            <i class="layui-icon">&#xe67c;</i>上传文件
+        </button>
+        <!--<button class="layui-btn layui-btn-primary" layadmin-event="avartatPreview">查看图片</button >-->
+    </div>
+    <div class="layui-word-aux">
+
+        <span class="Validform_checktip "></span>
+    </div>
+
+    <script>
+        var defaultImg = '__STATIC__/images/headimg.jpg';
+        layui.use('upload', function () {
+            var upload = layui.upload;
+
+            //执行实例
+            var uploadInst = upload.render({
+                elem: '#kml_upload',//绑定元素
+                accept: 'file', //普通文件
+                exts: 'kml', //只允许上传压缩文件
+                url: '{:url("Upload/kml")}', //上传接口
+                done: function (res) {
+                    console.log(upload);
+                    console.log(this);
+                    if (res.code == 1) {
+                        $("#kml_path").val(res.url);
+                        $("#kml_size").val(res.size);
+                        $("#kml_name").val(res.filename)
+
+                    } else {
+                        msgFaild(res.msg);
+                    }
+                    //上传完毕回调
+                },
+                error: function () {
+                    //请求异常回调
+                }
+            });
+        });
+
+        function delImg() {
+            $("#headimg").val("");
+            $("#headimg_img").attr("src", defaultImg);
+            $("#del_btn").hide();
+            $("#upload_btn").show();
+        }
+    </script>
+</div>
+{/eq}
+
+
+<div class="layui-form-item">
+    <label class="layui-form-label">
+        <span class="x-red">*</span>kml文件名
+    </label>
+    <div class="layui-input-inline w300">
+        <input type="text" value="{$model.kml_name}" id="kml_name" name="kml_name" datatype="*" autocomplete="off"
+               class="layui-input " datatype="*">
+    </div>
+    <div class="layui-form-mid layui-word-aux">
+
+        <span class="Validform_checktip ">输入kml文件名</span>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label for="L_email" class="layui-form-label">
+        <span class="x-red"></span>kml说明
+    </label>
+    <div class="layui-input-inline w300">
+        <textarea class="layui-textarea " name="kml_info" placeholder="填写文件说明">{$model.kml_info}</textarea>
+    </div>
+</div>
+
+
+
+
+<div class="layui-form-item">
+    <label for="L_repass" class="layui-form-label">
+    </label>
+    <input type="hidden" name="updatetime" value="{:time()}">
+    <button class="layui-btn" type="submit">
+        提交
+    </button>
+
+</div>
+
+
+<script>
+    $(function () {
+        $(".mainform").Validform({
+            tiptype: function (msg, o, cssctl) {
+                //msg：提示信息;
+                //o:{obj:*,type:*,curform:*}, obj指向的是当前验证的表单元素（或表单对象），type指示提示的状态，值为1、2、3、4， 1：正在检测/提交数据，2：通过验证，3：验证失败，4：提示ignore状态, curform为当前form对象;
+                //cssctl:内置的提示信息样式控制函数，该函数需传入两个参数：显示提示信息的对象 和 当前提示的状态（既形参o中的type）;
+                if (!o.obj.is("form")) {
+                    //验证表单元素时o.obj为该表单元素，全部验证通过提交表单时o.obj为该表单对象;
+                    var objtip = o.obj.parent().siblings(".layui-word-aux").children(".Validform_checktip");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                } else {
+                    console.log("o.obj is form");
+                    var objtip = o.obj.find("#msgdemo");
+                    cssctl(objtip, o.type);
+                    objtip.html(msg);
+                }
+            },
+            ajaxPost: true,
+            callback: function (data) {
+                console.log(data);
+                if (data.code == 1) {
+                    layer.alert(data.msg, {
+                        icon: 6
+                    }, function () {
+                        // 获得frame索引
+                        var index = parent.layer.getFrameIndex(window.name);
+                        //关闭当前frame
+                        parent.location.reload();
+                        parent.layer.close(index);
+
+                    });
+                } else {
+                    msgFaild(data.msg);
+                }
+            }
+        });
+
+
+    });
+</script>
+
+<script>
+    layui.use(['form', 'layer'], function () {
+        $ = layui.jquery;
+        var form = layui.form,
+            layer = layui.layer;
+
+
+
+
+
+
+    });
+</script>

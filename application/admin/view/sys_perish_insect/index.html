@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row tl">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('SysPerishInsect/index')}">
+        <div class="layui-inline">
+          <select name="can_del" lay-verify="required" lay-search="">
+              {foreach name="is_extra_list" item="item"}
+                  <option value="{$item.value}" {eq name="item.value" value="$can_del"} selected {/eq}>{$item.key}</option>
+              {/foreach}
+          </select>
+        </div>
+        <input type="text" name="keyword" placeholder="请输入配置名" autocomplete="off" class="layui-input" value="{$keyword}">
+        <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+      {eq name="can_del" value="1"}
+        <button class="layui-btn" onclick="x_admin_show('添加配置','{:url('SysPerishInsect/add', ['is_extra'=>$can_del])}',620)">
+          <i class="layui-icon"></i>添加
+        </button>
+      {/eq}
+      <span class="x-right" style="line-height:40px">共有数据：{$totalRows} 条</span>
+    </xblock>
+    <table class="layui-table">
+      <thead>
+        <tr>
+          <th>
+            <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i
+                        class="layui-icon">&#xe605;</i></div>
+          </th>
+          <th>ID</th>
+          <th>配置代码</th>
+          <th>配置名</th>
+          <th>字段名</th>
+          <th>输入类型</th>
+          <th>默认值</th>
+          <th>状态</th>
+          <th>排序</th>
+          <th>操作</th>
+      </thead>
+      <tbody>
+        {foreach name="list" item="item"}
+
+        <tr>
+          <td>
+            <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{$item.id}'><i class="layui-icon">&#xe605;</i>
+            </div>
+          </td>
+          <td>{$item.id}</td>
+          <td>{$item.index_code}</td>
+          <td>{$item.column_name}</td>
+          <td>{$item.column_code}</td>
+
+          <td>{$item.type|show_dic_value=###,$typeList}</td>
+          <td>{$item.default_value}</td>
+          <td>
+            {eq name="item.valid" value="1"}
+            <span class="layui-badge layui-bg-blue">启用</span>
+            {else/}
+            <span class="layui-badge-rim layui-bg-gray">禁用</span>
+            {/eq}
+            {eq name="item.output_valid" value="1"}
+            <span class="layui-badge layui-bg-blue">导出</span>
+            {else/}
+            <span class="layui-badge-rim layui-bg-gray">不导出</span>
+            {/eq}
+          </td>
+          <td>{$item.sort}</td>
+
+          <td class="td-manage">
+            <a title="编辑" onclick="x_admin_show('编辑','{:url('SysPerishInsect/edit',['id'=>$item['id'], 'is_extra'=>$can_del])}',620)" href="javascript:;" class="layui-btn layui-btn-xs">
+                    <i class="layui-icon">&#xe642;</i> 编辑
+                </a>
+            {eq name="item.type" value="select"}
+            <a title="选项" onclick="x_admin_show('选项','{:url('ConfigOption/index',['index_code'=>$item['index_code']])}')" href="javascript:;" class="layui-btn layui-btn-warm layui-btn-xs">
+                    <i class="layui-icon">&#xe62a;</i> 选项
+                </a>
+
+            {/eq}
+            {eq name="item.can_del" value="1"}
+            <a title="删除" onclick="member_del(this,'{$item.id}')" href="javascript:;" class="layui-btn-danger layui-btn layui-btn-xs">
+                    <i class="layui-icon">&#xe640;</i> 删除
+                </a>
+            {/eq}
+
+
+          </td>
+        </tr>
+        {/foreach}
+      </tbody>
+    </table>
+
+
+    <div class="page">
+      {$page}
+    </div>
+
+  </div>
+  <script>
+    /*用户-删除*/
+    function member_del(obj, id) {
+      layer.confirm('确认要删除这条记录吗？', function(index) {
+        $.post('{:url("SysPerishInsect/doDel")}', {
+          'ids': id
+        }, function(data) {
+          if (data.code == 1) {
+            //发异步删除数据
+            $(obj).parents("tr").remove();
+            layer.msg(data.msg, {
+              icon: 1,
+              time: 1000
+            });
+          } else {
+            msgFaild(data.msg);
+          }
+        }, 'json');
+
+      });
+    }
+
+
+    function delAll(argument) {
+
+      var data = tableCheck.getData();
+      layer.confirm('确认要删除选中记录吗？', function(index) {
+        $.post('{:url("SysPerishInsect/doDel")}', {
+          'ids': data.join(",")
+        }, function(data) {
+          if (data.code == 1) {
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', {
+              icon: 1
+            });
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+          } else {
+            msgFaild(data.msg);
+          }
+        }, 'json');
+
+      });
+    }
+  </script>
+
+
+</body>
+
+</html>

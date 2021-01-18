@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a>首页</a><a>系统设置</a>
+        <a>
+          <cite>参数配置</cite></a>
+      </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <form class="layui-form" method="post" action="{:url('Config/doEdit')}">
+        <input type="hidden" name="code" value="{$model.code}" />
+        <div class="layui-form-item">
+            <label for="username" class="layui-form-label">
+                <span class="x-red">*</span>域名
+            </label>
+            <div class="layui-input-inline w400">
+                <input type="text" id="host" name="host" required="" lay-verify="required"
+                       autocomplete="off" class="layui-input " value="{$model.host}">
+            </div>
+            <div class="layui-form-mid layui-word-aux">
+                <span class="x-red">*</span>包含http://，例如：http://baido.com/
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label for="L_repass" class="layui-form-label">
+            </label>
+            <button  class="layui-btn" lay-filter="add" lay-submit="">
+                保存
+            </button>
+        </div>
+    </form>
+    <script>
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+            var form = layui.form
+                ,layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({
+
+            });
+
+            //监听提交
+            form.on('submit(add)', function(data){
+                console.log(data);
+                var url=data.form.action;
+                var query=data.field;
+                $.post(url,query,function (resData) {
+                    if(resData.code==1){
+                        layer.alert(resData.msg, {icon: 6},function () {
+                            layer.closeAll();
+                        });
+                    }else{
+                        layer.alert(resData.msg, {icon: 5},function () {
+                            layer.closeAll();
+                        });
+                    }
+                },"json");
+                return false;
+            });
+
+
+        });
+    </script>
+
+</div>
+
+</body>
+
+</html>

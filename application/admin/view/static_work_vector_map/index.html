@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="public/header" /}
+</head>
+<body>
+{include file="public/nav" /}
+
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp"></script>
+<div class="x-body ">
+
+    <div class="layui-row tl">
+        <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('StaticWorkVectorMap/index')}">
+            <input class="layui-input" placeholder="开始日" name="begin_day" id="begin_day" value="{$begin_day}">
+            <input class="layui-input" placeholder="截止日" name="end_day" id="end_day" value="{$end_day}">
+
+            <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+        </form>
+    </div>
+
+    <div class="layui-card ">
+
+        <div class="layui-card-body pos_r">
+            <div class="container_box container_box_left" id="container" style="height: 300px"></div>
+            <div class="container_box container_box_right">
+                {foreach name="areaList" item="item" key="key"}
+                <p>
+                    <a title="点击查看作业记录" onclick="showRecord('{$item.area_name}')" href="javascript:;">
+                        [{$key+1}] {$item.area_name}({$item.count})
+                    </a>
+                </p>
+                {/foreach}
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    // R3NBZ-ERSW4-N24U7-X5MTG-ZCE73-6LBE7
+    var jsonStr = '{$areaList|json_encode=###,JSON_UNESCAPED_UNICODE}';
+    var areaList = eval("(" + jsonStr + ")");
+    var map, scaleControl;
+
+    $(function () {
+        $(".container_box").height($(window).height() - 150);
+        map = new qq.maps.Map(
+            document.getElementById("container"),
+            {
+                center: new qq.maps.LatLng(39.914850, 116.403765),
+                zoom: 14
+            }
+        );
+        var scaleControl = new qq.maps.ScaleControl({
+            align: qq.maps.ALIGN.BOTTOM_LEFT,
+            margin: qq.maps.Size(85, 15),
+            map: map
+        });
+        drawLine();
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#begin_day' //指定元素
+                ,max: '{$end_day}'
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end_day' //指定元素
+                ,max: '{$end_day}'
+            });
+        });
+    });
+
+    function drawLine() {
+        var latMax, lngMax, latLngNum;
+        var latMin, lngMin;
+        latMax = lngMax = latLngNum = 0;
+        latMin = 90;
+        lngMin = 180;
+        // console.log(areaList);
+        var polygons = new Array();
+        var len = areaList.length;
+        for (var i = 0; i < len; i++) {
+            (function (n) {
+                console.log(areaList[i]);
+                var polygon;
+                var path = [];
+                var lnglat = areaList[i].coordinates_gcj02.split(' ');
+                var textLatMin, textLatMax, textLngMin, textLngMax, textNum;
+                textLatMax = textLngMax = textNum = 0;
+                textLatMin = 90;
+                textLngMin = 180;
+                lnglat.forEach(function (value, index, array) {
+                    latlngArr = value.split(",");
+                    latMin = (latlngArr[1] < latMin) ? latlngArr[1] : latMin;
+                    latMax = (latlngArr[1] > latMax) ? latlngArr[1] : latMax;
+                    textLatMin = (latlngArr[1] < textLatMin) ? latlngArr[1] : textLatMin;
+                    textLatMax = (latlngArr[1] > textLatMax) ? latlngArr[1] : textLatMax;
+
+                    lngMin = (latlngArr[0] < lngMin) ? latlngArr[0] : lngMin;
+                    lngMax = (latlngArr[0] > lngMax) ? latlngArr[0] : lngMax;
+                    textLngMin = (latlngArr[0] < textLngMin) ? latlngArr[0] : textLngMin;
+                    textLngMax = (latlngArr[0] > textLngMax) ? latlngArr[0] : textLngMax;
+                    latLngNum++;
+                    textNum++;
+                    path.push(new qq.maps.LatLng(latlngArr[1], latlngArr[0]));
+                });
+                var textCenter = new qq.maps.LatLng((parseFloat(textLatMin) + parseFloat(textLatMax)) / 2, (parseFloat(textLngMin) + parseFloat(textLngMax)) / 2);
+                var label = new qq.maps.Label({
+                    // offset: qq.maps.Size(100,100),
+                    offset: new qq.maps.Size(-10, -14),
+                    map: map,
+                    content: "[" + (i + 1) + "]",
+                    style: {border: "none", background: "none"},
+                    position: textCenter
+                });
+                var defaultBg = "#FFFF00";
+                if (areaList[i].count > 0) {
+                    defaultBg = "#FF0000";
+                }
+
+                var polygon = new qq.maps.Polygon({
+                    path: path,
+                    strokeColor: '#000000',
+                    strokeWeight: 1,
+                    fillColor: qq.maps.Color.fromHex(defaultBg, 0.3),
+                    map: map
+                });
+                var area_name = areaList[i].area_name;
+                qq.maps.event.addListener(
+                    polygon,
+                    'click',
+                    function () {
+                        showRecord(area_name);
+                        // alert('您点击了地图' + n + area_name);
+                    }
+                );
+                qq.maps.event.addListener(
+                    label,
+                    'click',
+                    function () {
+                        showRecord(area_name);
+                        // alert('您点击了地图' + n + area_name);
+                    }
+                );
+                polygons.push(polygon);
+            })(i);
+        }
+
+        console.log("latMin:" + latMin);
+        console.log("latMax:" + latMax);
+        console.log("lngMin:" + lngMin);
+        console.log("lngMax:" + lngMax);
+        console.log();
+        //平移地图
+        var newCenter = new qq.maps.LatLng((parseFloat(latMin) + parseFloat(latMax)) / 2, (parseFloat(lngMin) + parseFloat(lngMax)) / 2);
+        map.panTo(newCenter);
+    }
+
+
+    function showRecord(area_name) {
+        var url = "{:url('StaticWorkVectorMap/record',['area_name'=>'11area_name11','begin_day'=>$begin_day,'end_day'=>$end_day])}";
+        url = url.replace(/11area_name11/, area_name);
+        console.log(url);
+        x_admin_show(area_name + ' 作业记录', url);
+    }
+
+</script>
+
+
+</body>
+</html>

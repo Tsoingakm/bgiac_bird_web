@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {include file="public/header" /}
+</head>
+<body>
+{include file="public/nav" /}
+
+
+<div class=" ">
+    <div class="map_main pos_r">
+
+        <div class="pos_r map_container" id="container"></div>
+
+    </div>
+    <script>
+        var lng = '{$lng}';
+        var lat = '{$lat}';
+        var diff = '{$diff}';
+    </script>
+
+    {include file="public/inc_amap"/}
+    <script type="text/javascript">
+        var map;
+        var icon;
+        var point = [lng, lat];
+        $(function () {
+            initWindow();
+            $(window).resize(function () {
+                initWindow();
+            });
+            map = pointMapInit();
+            //画点
+            var zoom = map.getZoom();
+            map.on('zoomend', mapZoomEnd);
+            addMarker(point, zoom);
+        });
+
+        function mapZoomEnd(){
+            var zoom = map.getZoom();
+            addMarker(point, zoom);
+        }
+        //初始化地图窗口
+        function initWindow() {
+            $(".map_main").height($(window).height() - 40);
+        }
+
+        function addMarker(point, zoom) {
+            icon = new AMap.Icon({
+                // 图标尺寸
+                size: new AMap.Size(zoom*2, zoom*2),
+                // 图标的取图地址
+                image: '__STATIC__/images/marker.png',
+                // 图标所用图片大小
+                imageSize: new window.AMap.Size(zoom*2, zoom*2),
+            });
+            var marker = new AMap.Marker({
+                icon: icon,
+                position: point,
+                anchor: 'center',
+                offset: new AMap.Pixel(0, 0)
+            });
+            marker.setMap(map);
+        }
+
+    </script>
+
+
+</div>
+
+
+</body>
+</html>

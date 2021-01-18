@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+    {include file="public/label_css" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+  <div class="x-body">
+      <form class="layui-form mainform" method="post" action="{:url('DeviceRecord/doEdit')}">
+          <input type="hidden" name="id" value="{$model.id}">
+          {include file="form/device_record" /}
+      </form>
+  </div>
+</body>
+
+</html>

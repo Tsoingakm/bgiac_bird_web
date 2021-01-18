@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body>
+  {include file="public/nav" /}
+  <div class="x-body">
+    <div class="layui-row">
+      <form class="layui-form layui-col-md12 x-so" method="post" action="{:url('QueryBirdSupervise/index')}">
+        日期范围：<input class="layui-input" placeholder="开始日" name="begin_day" id="begin_day" value="{$begin_day}" autocomplete="off">
+        <input class="layui-input" placeholder="截止日" name="end_day" id="end_day" value="{$end_day}" autocomplete="off">
+        &nbsp;
+        鸟名：
+        <div class="layui-input-inline">
+          <select name="bird_name" class="w80" lay-search>
+            <option value="">全部</option>
+            {foreach name="bird_name_list" item="item"}
+            <option value="{$item.bird_name}" {eq name="item.bird_name" value="$bird_name" }selected{/eq}>{$item.bird_name}</option>
+            {/foreach}
+
+          </select>
+        </div>
+        &nbsp;
+        巡视序号：
+        <div class="layui-input-inline">
+          <select name="view_number" class="w80" lay-search>
+            <option value="">全部</option>
+            {foreach name="view_number_list" item="item"}
+            <option value="{$item.value}" {eq name="item.value" value="$view_number" }selected{/eq}>{$item.key}</option>
+            {/foreach}
+
+          </select>
+        </div>
+        <button class="layui-btn" type="submit"><i class="layui-icon"></i></button>
+      </form>
+    </div>
+
+    <xblock>
+      <a class="layui-btn layui-btn-normal" href="{:url('QueryBirdSupervise/index',['act'=>'export_excel', 'begin_day'=>$begin_day,'end_day'=>$end_day,'bird_name'=>$bird_name,'view_num'=>$view_num])}">
+          <i class="layui-icon">&#xe60a;</i>导出excel
+      </a>
+    </xblock>
+    <table class="layui-table text-center">
+      <thead>
+        <tr>
+          <th style="text-align:center;">日期</th>
+          <th style="text-align:center;">只次数</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {foreach name="list" item="item" key="key"}
+          <tr>
+            <td>{$item.day_str}</td>
+            <td>{$item.sum_bird_num|default=0}</td>
+
+          </tr>
+        {/foreach}
+      </tbody>
+    </table>
+    <div class="page">
+      {$page}
+    </div>
+  </div>
+</body>
+<script>
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#begin_day' //指定元素
+            , max: '{$end_day}'
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end_day' //指定元素
+            , max: '{$today}'
+        });
+    });
+</script>
+
+</html>

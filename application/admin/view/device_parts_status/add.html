@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {include file="public/header" /}
+
+
+</head>
+
+<body>
+<div class="x-body w600 ma0">
+    <form class="layui-form mainform" method="post" action="{:url('DevicePartsStatus/doAdd')}">
+        <input type="hidden" name="addtime" value="{:time()}">
+        {include file="form/device_status" /}
+    </form>
+</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {include file="public/header" /}
+</head>
+
+<body style="background-color:#f2f2f2;">
+
+  <!--<div class="layui-container" style="width:1700px;overflow:hidden">-->
+    <!--<div class="layui-row mt5">-->
+
+      <!--<div class="layui-col-lg9 layui-col-md9">-->
+          <!--<form class="layui-form mainform  " method="post" action="{:url('Article/doEdit')}">-->
+            <!--<input type="hidden" name="updatetime" value="{:time()}">-->
+            <!--<input type="hidden" name="id" value="{$model.id}"> {include file="form/article" /}-->
+          <!--</form>-->
+      <!--</div>-->
+    <!--</div>-->
+
+  <!--</div>-->
+
+  <div class="layui-container" style="padding-top: 15px;">
+    <form class="layui-form mainform" method="post" action="{:url('Article/doEdit')}">
+      <input type="hidden" name="updatetime" value="{:time()}">
+      <input type="hidden" name="id" value="{$model.id}"> {include file="form/article" /}
+    </form>
+  </div>
+
+</body>
+
+</html>
