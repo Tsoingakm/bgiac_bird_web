@@ -1,2 +1,3 @@
 # bgiac_bird_web
 thinkphp5+layui project
+传统thinkphp项目，鸟情和设备管理平台系统前后端代码加小程序接口后端接口代码
